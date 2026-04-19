@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#ffffff">
+<title>Urban Design Daily</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --text: #2a2a2a;
+    --text-sub: #737373;
+    --text-faint: #a0a0a0;
+    --border: #ececec;
+    --border-hover: #d4d4d4;
+    --bg: #ffffff;
+    --bg-alt: #fafafa;
+    --accent: #2cb696;      /* note's signature green */
+    --accent-hover: #249a7f;
+    --radius: 4px;
+    --radius-lg: 8px;
+    --max: 720px;
+    --font-sans: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "ヒラギノ角ゴ ProN", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    --font-serif: "Noto Serif JP", "Hiragino Mincho ProN", "ヒラギノ明朝 ProN", serif;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+  }
+  a { color: var(--text); text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; color: inherit; }
+
+  /* ============ HEADER ============ */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(255,255,255,0.94);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .site-header-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .site-title {
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .site-title .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .tabs { display: flex; gap: 6px; }
+  .tab {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-sub);
+    padding: 7px 14px;
+    border-radius: 999px;
+    transition: all 0.15s;
+  }
+  .tab:hover { background: var(--bg-alt); color: var(--text); }
+  .tab.is-active {
+    background: var(--text);
+    color: #fff;
+  }
+  .tab .badge {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  /* ============ INTRO ============ */
+  .intro {
+    max-width: var(--max);
+    margin: 36px auto 20px;
+    padding: 0 20px;
+  }
+  .intro h1 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.35;
+    margin: 0 0 8px;
+    letter-spacing: 0.01em;
+  }
+  .intro p {
+    color: var(--text-sub);
+    font-size: 13.5px;
+    margin: 0;
+  }
+
+  /* ============ FEED ============ */
+  .feed {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 8px 20px 80px;
+  }
+  .day-header {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding: 28px 0 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .card {
+    display: block;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .card:hover { opacity: 0.82; }
+  .card-inner {
+    display: grid;
+    grid-template-columns: 1fr 112px;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .card-body { min-width: 0; }
+  .card-meta {
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-source {
+    font-weight: 500;
+    color: var(--text-sub);
+  }
+  .card-title {
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.45;
+    margin: 0 0 8px;
+    letter-spacing: 0.005em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-summary {
+    font-size: 13.5px;
+    color: var(--text-sub);
+    line-height: 1.65;
+    margin: 0 0 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .card-date {
+    font-size: 12px;
+    color: var(--text-faint);
+  }
+  .card-thumb {
+    width: 112px;
+    height: 112px;
+    border-radius: var(--radius-lg);
+    background: var(--bg-alt);
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  /* ============ LIKE BUTTON ============ */
+  .like-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--text-faint);
+    padding: 4px 2px;
+    border-radius: 4px;
+    transition: color 0.15s;
+  }
+  .like-btn:hover { color: var(--text-sub); }
+  .like-btn.is-liked { color: var(--accent); }
+  .like-btn .heart {
+    width: 16px; height: 16px;
+    fill: none; stroke: currentColor;
+    stroke-width: 1.6;
+    transition: all 0.15s;
+  }
+  .like-btn.is-liked .heart { fill: var(--accent); stroke: var(--accent); }
+  .like-btn .count { font-weight: 500; }
+
+  /* ============ EMPTY STATE ============ */
+  .empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-sub);
+  }
+  .empty h2 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+  .empty p { font-size: 13.5px; margin: 0; }
+
+  /* ============ EXTENSION-FRIENDLY TEXT ============ */
+  /* Ensure selection & injection work for DeepL / Google Translate / Super Simple Highlighter / ABC Words Saver etc. */
+  .detail-title,
+  .detail-summary,
+  .why-text,
+  .card-title,
+  .card-summary,
+  .detail-meta,
+  .topics {
+    -webkit-user-select: text;
+    user-select: text;
+    cursor: text;
+  }
+  .card-title, .card-summary { cursor: pointer; } /* card is still clickable, but text selectable */
+
+  /* ============ ARTICLE DETAIL (page-level, not modal) ============ */
+  .detail {
+    display: none;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+  .detail.is-open { display: block; }
+  .detail-back {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0 8px;
+    margin-bottom: 8px;
+  }
+  .detail-back button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+    color: var(--text-sub);
+    padding: 6px 10px;
+    border-radius: 6px;
+    margin-left: -10px;
+  }
+  .detail-back button:hover { background: var(--bg-alt); color: var(--text); }
+  .detail-body {
+    padding: 32px 24px 60px;
+  }
+  .detail-meta {
+    font-size: 12.5px;
+    color: var(--text-sub);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .detail-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.4;
+    margin: 0 0 18px;
+    letter-spacing: 0.008em;
+  }
+  .detail-thumb {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    margin: 0 0 24px;
+    background: var(--bg-alt);
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+  }
+  .detail-summary {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--text);
+    margin: 0 0 28px;
+  }
+  .why {
+    background: var(--bg-alt);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 0 0 32px;
+  }
+  .why-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 5px;
+  }
+  .why-text {
+    font-size: 14px;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.65;
+  }
+  .topics {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 0 0 28px;
+  }
+  .topic {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-sub);
+    background: var(--bg-alt);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .detail-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--border-hover);
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn:hover { background: var(--bg-alt); }
+  .btn-primary {
+    background: var(--text);
+    color: #fff;
+    border-color: var(--text);
+  }
+  .btn-primary:hover { background: #000; border-color: #000; }
+  .btn-like.is-liked {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(44,182,150,0.06);
+  }
+
+  /* ============ CATEGORY CHIPS ============ */
+  .chip-row-wrap {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .chip-row-wrap::-webkit-scrollbar { display: none; }
+  .chip-row {
+    display: flex;
+    gap: 8px;
+    padding: 4px 0 16px;
+    white-space: nowrap;
+  }
+  .chip {
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-sub);
+    background: var(--bg-alt);
+    padding: 7px 14px;
+    border-radius: 999px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .chip:hover { background: #f0f0f0; color: var(--text); }
+  .chip.is-active {
+    background: var(--text);
+    color: #fff;
+  }
+  .chip .chip-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .chip .chip-count {
+    font-size: 11.5px;
+    opacity: 0.7;
+    font-weight: 500;
+  }
+
+  /* ============ CARD CATEGORY LABEL ============ */
+  .card-cat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-sub);
+  }
+  .card-cat .cat-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+
+  /* ============ BOTTOM SHEET ============ */
+  .sheet {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: none;
+  }
+  .sheet.is-open { display: block; }
+  .sheet-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.38);
+    animation: sheet-fade 0.2s ease;
+  }
+  .sheet-panel {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    border-radius: 16px 16px 0 0;
+    padding: 10px 18px 24px;
+    max-width: var(--max);
+    margin: 0 auto;
+    animation: sheet-slide 0.24s cubic-bezier(.22,1,.36,1);
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  @keyframes sheet-fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sheet-slide { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    background: #d9d9d9;
+    border-radius: 999px;
+    margin: 0 auto 12px;
+  }
+  .sheet-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 17px;
+    margin: 6px 4px 16px;
+    color: var(--text);
+  }
+  .sheet-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .sheet-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 14px;
+    background: var(--bg-alt);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    transition: all 0.15s;
+    border: 1.5px solid transparent;
+    text-align: left;
+    width: 100%;
+  }
+  .sheet-opt:hover { background: #f2f2f2; }
+  .sheet-opt.is-current {
+    background: rgba(44,182,150,0.08);
+    border-color: var(--accent);
+  }
+  .sheet-opt .opt-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sheet-opt .opt-check {
+    margin-left: auto;
+    color: var(--accent);
+    font-size: 16px;
+    display: none;
+  }
+  .sheet-opt.is-current .opt-check { display: inline; }
+  .sheet-action {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 6px;
+    transition: background 0.15s;
+  }
+  .sheet-remove {
+    color: #d14a4a;
+    background: rgba(209,74,74,0.06);
+  }
+  .sheet-remove:hover { background: rgba(209,74,74,0.12); }
+  .sheet-cancel {
+    color: var(--text-sub);
+    background: transparent;
+  }
+  .sheet-cancel:hover { background: var(--bg-alt); }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 560px) {
+    .intro { margin-top: 24px; }
+    .intro h1 { font-size: 22px; }
+    .card-inner {
+      grid-template-columns: 1fr 84px;
+      gap: 14px;
+    }
+    .card-thumb { width: 84px; height: 84px; }
+    .card-title { font-size: 15.5px; }
+    .detail-body { padding: 24px 18px 48px; }
+    .detail-title { font-size: 22px; }
+    .sheet-options { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <div class="site-title"><span class="dot"></span>Urban Design Daily</div>
+    <nav class="tabs">
+      <button class="tab is-active" data-tab="all">All</button>
+      <button class="tab" data-tab="saved">Saved<span class="badge" id="saved-badge"></span></button>
+    </nav>
+  </div>
+</header>
+
+<section class="intro" id="intro">
+  <h1>Today in city-making.</h1>
+  <p id="intro-subtitle">English-language urban design news, filed daily at 9am.</p>
+</section>
+
+<div class="chip-row-wrap" id="chip-row-wrap" style="display:none;">
+  <div class="chip-row" id="chip-row"></div>
+</div>
+
+<main class="feed" id="feed"></main>
+
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div class="sheet-backdrop" data-sheet-close></div>
+  <div class="sheet-panel">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-title">Save to...</div>
+    <div class="sheet-options" id="sheet-options"></div>
+    <button class="sheet-action sheet-remove" id="sheet-remove" style="display:none;">Remove from saved</button>
+    <button class="sheet-action sheet-cancel" data-sheet-close>Cancel</button>
+  </div>
+</div>
+
+<script id="initial-data" type="application/json">
+{
+  "articles": [
+    {
+      "id": "2026-04-19-001",
+      "date": "2026-04-19",
+      "title": "Country-centred urban design scheme wins 2026 AA Prize for Unbuilt Work",
+      "source": "ArchitectureAU",
+      "url": "https://architectureau.com/articles/country-centred-urban-design-scheme-wins-2026-aa-prize-for-unbuilt-work/",
+      "thumbnail": "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=800&q=70",
+      "summary": "Whadjuk Balardong Elder Robyn Collard and architect Simon Pendal have won the 2026 AA Prize for Unbuilt Work with \"Walyalup/Fremantle — What If,\" a speculative scheme that reimagines Fremantle's planning code through a Country-centred lens. Rather than redesign individual sites, the project proposes structural changes to local planning controls: a network of \"garden archipelagos\" — connected green spaces that thread through the city by linking yards, schoolyards, sports grounds, golf courses, mature reserves and natural bush — paired with discreet building density bonuses concentrated at the edges of each lot. The combination is calibrated to bring back Country across the metropolitan grain without the broad-brush demolition that traditional urban renewal demands. The submission positions Fremantle as a test case for what Pendal calls \"layering new uses without subtraction\": existing fabric is preserved, gardens and small businesses are folded into the same blocks as new homes, and pedestrian and ecological connections are formalised through code rather than negotiated case by case. Density bonuses act as the regulatory carrot; ecological connectivity is the binding rule that organises growth. The 2026 jury — Ingrid Bakker (Hassell), Kirsteen Mackay (Office for Design and Architecture SA), Deo Prasad (UNSW), Stuart Vokes (Vokes and Peters), and chair Georgia Birks (Architecture Australia) — singled out the project for translating Indigenous-led thinking into operational planning instruments rather than rhetoric. For Australian designers used to seeing Country acknowledgement as a project add-on, the win signals a serious appetite for embedding it inside the zoning code itself.",
+      "whyItMatters": "Country-led planning is finally being operationalised as zoning code, not just cultural protocol — density bonuses become the carrot, ecological connectivity the rule.",
+      "topics": ["Australia", "Indigenous-led", "Planning Reform"]
+    },
+    {
+      "id": "2026-04-19-002",
+      "date": "2026-04-19",
+      "title": "Reimagining the Complete Neighborhood through Urban Renaturing",
+      "source": "ArchDaily",
+      "url": "https://www.archdaily.com/1040595/reimagining-the-complete-neighborhood-through-urban-renaturing",
+      "thumbnail": "https://images.unsplash.com/photo-1502208327471-d5dde4d38995?w=800&q=70",
+      "summary": "ArchDaily contributor Olivia Poston profiles ReGreeneration, a transnational European consortium led by C40 Cities and supported by ARUP, Placemaking Europe, Climato Sfera and Inetum, that operates explicitly at the intersection of urban ecology, public health, infrastructure and neighborhood-scale design. The project is funded under Horizon Europe — the EU's research and innovation programme launched in 2021 with a 95 billion euro commitment — and unites nine cities, their governing bodies, and leading research institutions in a coordinated effort to rebuild European neighbourhoods around climate resilience. The article's premise is structural: rather than treating greening as urban beautification or stormwater infrastructure as an engineering problem, ReGreeneration argues that European cities must fundamentally change how they are built and maintained if they are to remain liveable under accelerating climate pressure. The \"complete neighbourhood\" concept — usually used in North American planning to describe walkable, mixed-use districts with daily needs in proximity — is here recast through an ecological lens, with renaturing (the deliberate restoration of soil, hydrology, canopy and biodiversity into built fabric) treated as a foundational service alongside transport and housing. The piece collects case studies from participating cities, sketching how neighbourhood-scale interventions are being prototyped: depaved courtyards, rerouted stormwater, microforest plantings, cooling corridors, building retrofits. For practitioners outside Europe, the project is a useful precedent for how a public funder can underwrite the slow, expensive work of structural ecological retrofit at a scale individual councils rarely manage.",
+      "whyItMatters": "\"Complete neighbourhood\" is usually a transport/retail idea. Folding ecological renaturing into it — funded at EU scale — genuinely shifts the term's meaning.",
+      "topics": ["Europe", "Climate", "Public Space"]
+    },
+    {
+      "id": "2026-04-19-003",
+      "date": "2026-04-19",
+      "title": "Melbourne Design Week 2026: 400+ events mark the decade",
+      "source": "ArchitectureAU",
+      "url": "https://architectureau.com/articles/melbourne-design-week-2026-announced/",
+      "thumbnail": "https://images.unsplash.com/photo-1514395462725-fb4566210144?w=800&q=70",
+      "summary": "Melbourne Design Week 2026 returns 14–24 May for its tenth anniversary edition with more than 400 events spanning architecture, interiors, product design and emerging cross-disciplinary practice — the largest program the festival has staged. The decade marker positions Melbourne's design culture as a confident export rather than a regional showcase, with international visitors expected across a slate that includes exhibitions, symposia, studio openings, walking tours, and on-site previews of projects in construction. The Queen Victoria Market precinct emerges as a recurring centre of gravity. Cox Architecture's recently announced scheme — more than 1,500 dwellings opposite the soon-to-be-built Gurrowa Place development — sits at the western edge of the market and is one of several projects MDW is using to anchor conversation about the future of central Melbourne's residential mix. Several program threads engage directly with QV Market's redevelopment, treating it as a live brief rather than a finished case study, with curated walks and roundtables built around the precinct's evolving public realm. Other strands cover circularity in product design, Indigenous-led design practice, and the emerging cohort of practice models being incubated through RMIT, Monash and Melbourne University design schools. The decade-long arc of MDW also lets the festival reflect on its own format — a number of sessions will examine whether the city-as-festival model still serves a profession increasingly distributed across hybrid and remote work. Full program drops late April; bookings open shortly after.",
+      "whyItMatters": "QV Market is now the de facto centre of gravity for Melbourne's next decade of urban thinking. Watch what gets programmed there over the festival's ten days.",
+      "topics": ["Melbourne", "Events", "Mixed-use"]
+    },
+    {
+      "id": "2026-04-18-001",
+      "date": "2026-04-18",
+      "title": "Melbourne group resurrects dormant Urban Design Forum",
+      "source": "ArchitectureAU",
+      "url": "https://architectureau.com/articles/urban-design-forum/",
+      "thumbnail": "https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800&q=70",
+      "summary": "A group of Melbourne practitioners has relaunched the Urban Design Forum (UDF), reviving a more than 30-year-old organisation that had gone dormant during the pandemic. The reboot — formally announced at MPavilion — aims to galvanise like-minded peers around the major challenges facing Australian cities, with a stated mission to support \"the design and governance of the city in the public interest\" with a renewed sense of ambition. The relaunch fills a recognisable gap in the Melbourne discourse. Australian urban design currently runs through professional peak bodies (AILA, AIA, PIA), academic conferences and individual practice events, but lacks a forum dedicated specifically to urban design — distinct from architecture or planning — at the metropolitan scale. The UDF revival positions itself as that connective tissue: a space for cross-disciplinary debate among urban designers, landscape architects, planners, transport engineers and city-makers from local government. Programming will include public forums, members-only roundtables, research fellowships and an advocacy stream targeting state policy. Early sessions are framed around metropolitan-scale questions — the next refresh of Plan Melbourne, the role of public land in housing supply, density done well, and the governance gaps in growth-area councils — that the founders argue have lacked an organised professional voice. The committee includes practitioners drawn from large multidisciplinary firms, sole-practice studios, academia and local government, deliberately spanning generations. Subscriptions and event signups are now open through udf.org.au.",
+      "whyItMatters": "Professional forums shape what cities ask for. A revived UDF changes whose voices get into Plan Melbourne's next refresh — and how loud they are.",
+      "topics": ["Melbourne", "Advocacy", "Policy"]
+    },
+    {
+      "id": "2026-04-18-002",
+      "date": "2026-04-18",
+      "title": "University of Michigan launches one-year Master of Urban Technology",
+      "source": "Planetizen",
+      "url": "https://www.planetizen.com/news/2026/04/137332-university-michigan-launches-urban-technology-masters-program",
+      "thumbnail": "https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=800&q=70",
+      "summary": "The University of Michigan's Taubman College of Architecture and Urban Planning will launch a one-year Master of Urban Technology degree — the first programme of its kind that can be completed in a single year at a US university. The new degree positions itself between traditional urban planning and computer science, targeting an emerging professional space defined by civic data, smart mobility, sensor networks, and neighborhood-scale digital infrastructure. The structure — accelerated, post-graduate, professionally oriented — signals a maturation of the urban-tech field, which until now has typically been pursued through graduate certificates inside planning faculties or specialised tracks within information schools. Taubman's programme commits a full year of dedicated coursework to the discipline, suggesting employer demand has reached the point where a standalone credential is viable. Course content will cover civic data infrastructure, urban analytics, mobility systems, public-sector digital procurement, and the ethics of automated decision-making in city services. Studio work pairs students with municipal partners on live projects — a model adapted from Taubman's existing planning studios. Graduates are positioned for hybrid roles in city governments, transit agencies, large engineering consultancies, and the emerging cohort of urban-tech vendors building everything from kerbside sensors to congestion-pricing systems. For practitioners watching this space, the launch is a useful signal: urban tech is consolidating from a sub-specialty into its own recognised discipline, and the credentialing infrastructure is starting to catch up. First intake opens in autumn.",
+      "whyItMatters": "Urban tech is consolidating from a sub-specialty into its own discipline. Watch the credentialing infrastructure — that's where the field's centre of gravity moves next.",
+      "topics": ["US", "Education", "Urban Tech"]
+    }
+  ]
+}
+</script>
+
+<article class="detail" id="detail" aria-hidden="true">
+  <div class="detail-back">
+    <button id="detail-close-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Back
+    </button>
+    <button class="like-btn" id="detail-like-top">
+      <svg class="heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      <span class="count"></span>
+    </button>
+  </div>
+  <div class="detail-body" id="detail-body"></div>
+</article>
+
+<script>
+(function(){
+  'use strict';
+
+  // ========== CONSTANTS ==========
+  const STORAGE_KEY = 'udd_saved_v2';      // { [articleId]: categoryId }
+  const OLD_KEY     = 'udd_liked_v1';      // legacy: [articleId, ...]
+
+  const CATEGORIES = [
+    { id: 'melbourne', label: 'Melbourne', color: '#e85d75' },
+    { id: 'australia', label: 'Australia', color: '#ffa41b' },
+    { id: 'japan',     label: 'Japan',     color: '#d14a4a' },
+    { id: 'europe',    label: 'Europe',    color: '#4a7bd8' },
+    { id: 'asia',      label: 'Asia',      color: '#7b4ad8' },
+    { id: 'other',     label: 'Other',     color: '#8a8a8a' },
+  ];
+  const CAT_BY_ID = Object.fromEntries(CATEGORIES.map(c => [c.id, c]));
+
+  // ========== STATE ==========
+  const state = {
+    articles: [],
+    saved: {},             // { articleId: categoryId }
+    tab: 'all',            // 'all' | 'saved'
+    savedFilter: 'all',    // 'all' | categoryId
+    openId: null,          // article id open in detail modal
+    sheetId: null,         // article id whose save-sheet is open
+  };
+
+  // ========== STORAGE ==========
+  function loadSaved() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) { state.saved = JSON.parse(raw); return; }
+    } catch(e) {}
+    // migrate from legacy
+    try {
+      const oldRaw = localStorage.getItem(OLD_KEY);
+      if (oldRaw) {
+        const arr = JSON.parse(oldRaw);
+        const mig = {};
+        (arr || []).forEach(id => { mig[id] = 'other'; });
+        state.saved = mig;
+        persistSaved();
+      }
+    } catch(e) {}
+  }
+  function persistSaved() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.saved)); } catch(e) {}
+  }
+  function isSaved(id) { return !!state.saved[id]; }
+  function getCat(id) { return state.saved[id] || null; }
+  function setCat(id, cat) { state.saved[id] = cat; persistSaved(); }
+  function removeSave(id) { delete state.saved[id]; persistSaved(); }
+
+  // ========== UTIL ==========
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, ch => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+  }
+  function fmtDate(iso) {
+    try {
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch(e) { return iso; }
+  }
+  function fmtDayHeader(iso) {
+    try {
+      const d = new Date(iso + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    } catch(e) { return iso; }
+  }
+  function groupByDate(arr) {
+    const map = new Map();
+    arr.forEach(a => {
+      if (!map.has(a.date)) map.set(a.date, []);
+      map.get(a.date).push(a);
+    });
+    return [...map.entries()].sort((a,b) => b[0].localeCompare(a[0]));
+  }
+  function countByCategory() {
+    const counts = Object.fromEntries(CATEGORIES.map(c => [c.id, 0]));
+    Object.values(state.saved).forEach(cat => {
+      if (counts[cat] != null) counts[cat]++;
+    });
+    return counts;
+  }
+
+  // ========== RENDER ==========
+  function heartSvg() {
+    return '<svg class="heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>';
+  }
+  function cardHtml(a) {
+    const saved = isSaved(a.id);
+    const cat = saved ? CAT_BY_ID[getCat(a.id)] : null;
+    const thumb = a.thumbnail
+      ? `<img class="card-thumb" src="${escapeHtml(a.thumbnail)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`
+      : `<div class="card-thumb"></div>`;
+    const catLabel = cat
+      ? `<span class="card-cat"><span class="cat-dot" style="background:${cat.color}"></span>${escapeHtml(cat.label)}</span>`
+      : '';
+    return `
+      <article class="card" data-id="${escapeHtml(a.id)}">
+        <div class="card-inner">
+          <div class="card-body">
+            <div class="card-meta">
+              <span class="card-source">${escapeHtml(a.source)}</span>
+              ${catLabel ? `<span>·</span>${catLabel}` : ''}
+            </div>
+            <h2 class="card-title">${escapeHtml(a.title)}</h2>
+            <p class="card-summary">${escapeHtml(a.summary)}</p>
+            <div class="card-footer">
+              <span class="card-date">${fmtDate(a.date)}</span>
+              <button class="like-btn ${saved?'is-liked':''}" data-like="${escapeHtml(a.id)}" aria-label="Save">
+                ${heartSvg()}
+              </button>
+            </div>
+          </div>
+          ${thumb}
+        </div>
+      </article>
+    `;
+  }
+  function renderChips() {
+    const wrap = document.getElementById('chip-row-wrap');
+    const row = document.getElementById('chip-row');
+    if (state.tab !== 'saved') {
+      wrap.style.display = 'none';
+      return;
+    }
+    wrap.style.display = 'block';
+    const counts = countByCategory();
+    const total = Object.values(counts).reduce((a,b) => a+b, 0);
+    const chips = [
+      `<button class="chip ${state.savedFilter==='all'?'is-active':''}" data-chip="all">All <span class="chip-count">${total}</span></button>`,
+      ...CATEGORIES.map(c => {
+        const n = counts[c.id] || 0;
+        return `<button class="chip ${state.savedFilter===c.id?'is-active':''}" data-chip="${c.id}">
+          <span class="chip-dot" style="background:${c.color}"></span>${escapeHtml(c.label)}
+          <span class="chip-count">${n}</span>
+        </button>`;
+      })
+    ];
+    row.innerHTML = chips.join('');
+  }
+  function renderFeed() {
+    const feed = document.getElementById('feed');
+    let list = state.articles.slice();
+    if (state.tab === 'saved') {
+      list = list.filter(a => isSaved(a.id));
+      if (state.savedFilter !== 'all') {
+        list = list.filter(a => getCat(a.id) === state.savedFilter);
+      }
+    }
+    list.sort((a,b) => b.date.localeCompare(a.date));
+
+    renderChips();
+
+    if (list.length === 0) {
+      let msg = 'Tomorrow morning\u2019s digest will appear here.';
+      let heading = 'No articles yet';
+      if (state.tab === 'saved') {
+        if (state.savedFilter === 'all') {
+          heading = 'No saved articles yet';
+          msg = 'Tap the heart on a card and choose a category to save it here.';
+        } else {
+          const c = CAT_BY_ID[state.savedFilter];
+          heading = `No saved ${c ? c.label : ''} articles yet`;
+          msg = 'Save an article to this category from its heart button.';
+        }
+      }
+      feed.innerHTML = `
+        <div class="empty">
+          <h2>${escapeHtml(heading)}</h2>
+          <p>${escapeHtml(msg)}</p>
+        </div>`;
+      return;
+    }
+
+    const grouped = groupByDate(list);
+    feed.innerHTML = grouped.map(([date, items]) => `
+      <div class="day-header">${fmtDayHeader(date)}</div>
+      ${items.map(cardHtml).join('')}
+    `).join('');
+  }
+  function renderSavedBadge() {
+    const b = document.getElementById('saved-badge');
+    const n = Object.keys(state.saved).length;
+    b.textContent = n > 0 ? n : '';
+  }
+
+  // ========== DETAIL ==========
+  function openDetail(id, opts) {
+    opts = opts || {};
+    const a = state.articles.find(x => x.id === id);
+    if (!a) return;
+    state.openId = id;
+    // Update URL so per-article highlighter/word-saver extensions can scope by URL
+    if (!opts.fromHash) {
+      try { history.pushState({ articleId: id }, '', '#/a/' + encodeURIComponent(id)); } catch(e) {}
+    }
+    const saved = isSaved(id);
+    const cat = saved ? CAT_BY_ID[getCat(id)] : null;
+    const body = document.getElementById('detail-body');
+    const topics = (a.topics || []).map(t => `<span class="topic">${escapeHtml(t)}</span>`).join('');
+    const thumb = a.thumbnail
+      ? `<img class="detail-thumb" src="${escapeHtml(a.thumbnail)}" alt="">`
+      : '';
+    const saveLabel = saved ? `Saved · ${cat ? cat.label : ''}` : 'Save';
+    body.innerHTML = `
+      <div class="detail-meta">
+        <span class="card-source">${escapeHtml(a.source)}</span>
+        <span>·</span>
+        <span>${fmtDate(a.date)}</span>
+        ${cat ? `<span>·</span><span class="card-cat"><span class="cat-dot" style="background:${cat.color}"></span>${escapeHtml(cat.label)}</span>` : ''}
+      </div>
+      <h1 class="detail-title">${escapeHtml(a.title)}</h1>
+      ${thumb}
+      <p class="detail-summary">${escapeHtml(a.summary)}</p>
+      ${a.whyItMatters ? `
+        <div class="why">
+          <div class="why-label">Why it matters</div>
+          <p class="why-text">${escapeHtml(a.whyItMatters)}</p>
+        </div>` : ''}
+      ${topics ? `<div class="topics">${topics}</div>` : ''}
+      <div class="detail-actions">
+        <a class="btn btn-primary" href="${escapeHtml(a.url)}" target="_blank" rel="noopener">
+          Read original
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M8 7h9v9"/></svg>
+        </a>
+        <button class="btn btn-like ${saved?'is-liked':''}" id="detail-like-btn">
+          ${heartSvg()}
+          <span>${saveLabel}</span>
+        </button>
+      </div>
+    `;
+    document.getElementById('detail-like-top').classList.toggle('is-liked', saved);
+    document.getElementById('detail').classList.add('is-open');
+    // Hide list-view UI so the article reads as the page's main content
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('chip-row-wrap').style.display = 'none';
+    document.getElementById('feed').style.display = 'none';
+    window.scrollTo(0, 0);
+  }
+  function closeDetail(opts) {
+    opts = opts || {};
+    state.openId = null;
+    document.getElementById('detail').classList.remove('is-open');
+    document.getElementById('intro').style.display = '';
+    document.getElementById('feed').style.display = '';
+    // Clear hash so URL is back to index
+    if (!opts.fromPop) {
+      try {
+        if (location.hash && location.hash.indexOf('#/a/') === 0) {
+          history.pushState(null, '', location.pathname + location.search);
+        }
+      } catch(e) {}
+    }
+    renderFeed(); // also re-shows chip row if needed
+  }
+
+  function parseHashArticleId() {
+    const h = location.hash || '';
+    const m = h.match(/^#\/a\/(.+)$/);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+  function handleHashChange() {
+    const id = parseHashArticleId();
+    if (id && state.articles.find(a => a.id === id)) {
+      if (state.openId !== id) openDetail(id, { fromHash: true });
+    } else {
+      if (state.openId) closeDetail({ fromPop: true });
+    }
+  }
+
+  // ========== BOTTOM SHEET ==========
+  function openSheet(articleId) {
+    state.sheetId = articleId;
+    const saved = isSaved(articleId);
+    const currentCat = saved ? getCat(articleId) : null;
+    document.getElementById('sheet-title').textContent = saved ? 'Move to…' : 'Save to…';
+    const opts = CATEGORIES.map(c => `
+      <button class="sheet-opt ${c.id===currentCat?'is-current':''}" data-cat="${c.id}">
+        <span class="opt-dot" style="background:${c.color}"></span>
+        <span>${escapeHtml(c.label)}</span>
+        <span class="opt-check">\u2713</span>
+      </button>
+    `).join('');
+    document.getElementById('sheet-options').innerHTML = opts;
+    document.getElementById('sheet-remove').style.display = saved ? 'block' : 'none';
+    document.getElementById('sheet').classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeSheet() {
+    state.sheetId = null;
+    document.getElementById('sheet').classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+  function chooseCategory(cat) {
+    if (!state.sheetId) return;
+    setCat(state.sheetId, cat);
+    const wasInDetail = state.openId === state.sheetId;
+    closeSheet();
+    renderFeed();
+    renderSavedBadge();
+    if (wasInDetail) openDetail(state.openId);
+  }
+  function removeFromSheet() {
+    if (!state.sheetId) return;
+    const wasInDetail = state.openId === state.sheetId;
+    removeSave(state.sheetId);
+    closeSheet();
+    renderFeed();
+    renderSavedBadge();
+    if (wasInDetail) openDetail(state.openId);
+  }
+
+  // ========== EVENTS ==========
+  function bind() {
+    // Top tabs
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        state.tab = btn.dataset.tab;
+        if (state.tab !== 'saved') state.savedFilter = 'all';
+        renderFeed();
+      });
+    });
+
+    // Feed clicks (cards + like buttons)
+    document.getElementById('feed').addEventListener('click', (e) => {
+      const likeBtn = e.target.closest('[data-like]');
+      if (likeBtn) {
+        e.stopPropagation();
+        openSheet(likeBtn.dataset.like);
+        return;
+      }
+      const card = e.target.closest('.card');
+      if (card) openDetail(card.dataset.id);
+    });
+
+    // Chip row clicks
+    document.getElementById('chip-row').addEventListener('click', (e) => {
+      const chip = e.target.closest('[data-chip]');
+      if (!chip) return;
+      state.savedFilter = chip.dataset.chip;
+      renderFeed();
+    });
+
+    // Detail modal
+    document.getElementById('detail-close-btn').addEventListener('click', closeDetail);
+    document.getElementById('detail').addEventListener('click', (e) => {
+      if (e.target.id === 'detail') closeDetail();
+    });
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('#detail-like-btn') && state.openId) {
+        openSheet(state.openId);
+      }
+      if (e.target.closest('#detail-like-top') && state.openId) {
+        openSheet(state.openId);
+      }
+    });
+
+    // Sheet clicks
+    document.getElementById('sheet').addEventListener('click', (e) => {
+      if (e.target.closest('[data-sheet-close]')) { closeSheet(); return; }
+      const opt = e.target.closest('[data-cat]');
+      if (opt) { chooseCategory(opt.dataset.cat); return; }
+    });
+    document.getElementById('sheet-remove').addEventListener('click', removeFromSheet);
+
+    // Keyboard
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (state.sheetId) closeSheet();
+        else if (state.openId) closeDetail();
+      }
+    });
+
+    // Back/forward button & external hash navigation
+    window.addEventListener('popstate', handleHashChange);
+    window.addEventListener('hashchange', handleHashChange);
+  }
+
+  // ========== INIT ==========
+  async function init() {
+    loadSaved();
+    bind();
+    let data = null;
+    try {
+      const res = await fetch('data.json?v=' + Date.now());
+      if (res.ok) data = await res.json();
+    } catch(e) { /* file:// or offline — fall back to inline */ }
+    if (!data || !Array.isArray(data.articles) || data.articles.length === 0) {
+      try {
+        const inline = document.getElementById('initial-data');
+        if (inline) data = JSON.parse(inline.textContent);
+      } catch(e) {}
+    }
+    state.articles = (data && data.articles) || [];
+    renderFeed();
+    renderSavedBadge();
+    // If URL arrives with #/a/{id}, auto-open that article (bookmark support)
+    const hashId = parseHashArticleId();
+    if (hashId && state.articles.find(a => a.id === hashId)) {
+      openDetail(hashId, { fromHash: true });
+    }
+  }
+  init();
+})();
+</script>
+
+</body>
+</html>
