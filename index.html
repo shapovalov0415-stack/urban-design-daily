@@ -696,6 +696,14 @@
   // ========== CONSTANTS ==========
   const STORAGE_KEY = 'udd_saved_v2';      // { [articleId]: categoryId }
   const OLD_KEY     = 'udd_liked_v1';      // legacy: [articleId, ...]
+  const TS_KEY      = 'udd_local_ts';      // last-known updatedAt we synced
+
+  // Cloud sync (JSONBin.io) — personal bin, Access Key scoped to read/update only
+  const SYNC = {
+    binId:    '69e57c1faaba882197188ff4',
+    readKey:  '$2a$10$TEL1UHkdrjCOklCUHRt5L.tlwcehOhiIIm7d1Eri0Thpcn2VixGRK',
+    apiBase:  'https://api.jsonbin.io/v3',
+  };
 
   const CATEGORIES = [
     { id: 'melbourne', label: 'Melbourne', color: '#e85d75' },
@@ -740,8 +748,71 @@
   }
   function isSaved(id) { return !!state.saved[id]; }
   function getCat(id) { return state.saved[id] || null; }
-  function setCat(id, cat) { state.saved[id] = cat; persistSaved(); }
-  function removeSave(id) { delete state.saved[id]; persistSaved(); }
+  function setCat(id, cat) { state.saved[id] = cat; persistSaved(); schedulePush(); }
+  function removeSave(id) { delete state.saved[id]; persistSaved(); schedulePush(); }
+
+  // ========== CLOUD SYNC (JSONBin.io) ==========
+  // Strategy: last-write-wins at object level, by ISO updatedAt string.
+  // - On page load: fetch remote. If remote is newer than what we last saw locally, replace local with remote. Otherwise push local up.
+  // - On save/unsave: update local immediately (fast UI), debounced push to remote.
+
+  async function fetchRemote() {
+    try {
+      const res = await fetch(`${SYNC.apiBase}/b/${SYNC.binId}/latest`, {
+        headers: { 'X-Access-Key': SYNC.readKey }
+      });
+      if (!res.ok) return null;
+      const body = await res.json();
+      return body.record || null;
+    } catch(e) { return null; }
+  }
+
+  async function pushRemote() {
+    const now = new Date().toISOString();
+    try {
+      const res = await fetch(`${SYNC.apiBase}/b/${SYNC.binId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Access-Key': SYNC.readKey
+        },
+        body: JSON.stringify({ saved: state.saved, updatedAt: now })
+      });
+      if (res.ok) {
+        try { localStorage.setItem(TS_KEY, now); } catch(e) {}
+      }
+    } catch(e) { /* offline */ }
+  }
+
+  let pushTimer = null;
+  function schedulePush() {
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(pushRemote, 700);
+  }
+
+  async function syncInitial() {
+    const remote = await fetchRemote();
+    if (!remote || !remote.saved) {
+      // Remote empty/new — push our local state up to initialize
+      if (Object.keys(state.saved).length > 0) pushRemote();
+      return;
+    }
+    const localTs = (function(){ try { return localStorage.getItem(TS_KEY) || ''; } catch(e){ return ''; } })();
+    const remoteTs = remote.updatedAt || '';
+    // ISO 8601 strings compare lexicographically = chronologically
+    if (remoteTs && remoteTs > localTs) {
+      // Remote newer: overwrite local
+      state.saved = remote.saved || {};
+      persistSaved();
+      try { localStorage.setItem(TS_KEY, remoteTs); } catch(e) {}
+      renderFeed();
+      renderSavedBadge();
+    } else if (localTs && localTs > remoteTs) {
+      // Local newer: push up
+      pushRemote();
+    }
+    // else: equal or both empty — nothing to do
+  }
 
   // ========== UTIL ==========
   function escapeHtml(s) {
@@ -1097,6 +1168,12 @@
     if (hashId && state.articles.find(a => a.id === hashId)) {
       openDetail(hashId, { fromHash: true });
     }
+    // Sync saved state from cloud (non-blocking)
+    syncInitial();
+    // Re-sync when tab becomes visible again (catches changes from other devices)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) syncInitial();
+    });
   }
   init();
 })();
