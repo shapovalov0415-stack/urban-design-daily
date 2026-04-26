@@ -14,8 +14,12 @@ Actions instead of the local Mac launchd job + Cowork scheduled tasks.
 
 ## Cron
 
-Workflow runs once per day at **21:00 UTC = 06:00 JST (next day)**, plus
-`workflow_dispatch` for manual runs from the GitHub UI.
+Workflow runs once per day at **17:00 UTC** = **03:00 AEST / 04:00 AEDT
+Melbourne (next day)**, plus `workflow_dispatch` for manual runs from the
+GitHub UI. Scheduled this early to absorb GHA cron drift so articles reliably
+land before 06:00 Melbourne local. `generate_news.py` still tags articles with
+the JST date — at 17:00+ UTC, JST and Melbourne dates always agree, so no
+date-skew issues.
 
 ## Required setup (one-time)
 

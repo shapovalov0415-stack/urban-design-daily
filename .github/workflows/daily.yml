@@ -2,8 +2,10 @@ name: Daily urban design digest
 
 on:
   schedule:
-    # 21:00 UTC = 06:00 JST (Tokyo, next day)
-    - cron: "0 21 * * *"
+    # 17:00 UTC = 03:00 AEST (winter) / 04:00 AEDT (summer) Melbourne, next day.
+    # Scheduled this early to absorb GHA cron drift (typically <30min, can be
+    # 1–2h under load) so articles reliably land before 06:00 Melbourne local.
+    - cron: "0 17 * * *"
   workflow_dispatch: # allow manual runs from GitHub UI
 
 permissions:
