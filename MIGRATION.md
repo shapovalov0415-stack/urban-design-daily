@@ -63,8 +63,14 @@ that token. Ad hoc local pushes after rotation will use SSH or `gh auth login`.
 - **Anthropic API error**: workflow fails; rerun manually or wait for next
   day's cron. No partial commits because the script writes data.json only
   after a successful API call.
-- **Same-day rerun**: `generate_news.py` short-circuits if `data.json` already
-  has entries dated today (JST). Safe to retrigger.
+- **Hard target of 3 articles/day**: `generate_news.py` retries the model up
+  to 4 times, asking for "the missing N" each pass and feeding back the
+  cumulative dedup list. If after all retries we still have fewer than 3, the
+  script exits 1 (run shows red) and the workflow stops before commit — so
+  the partial state never leaks to `main`. Manual rerun starts fresh.
+- **Same-day rerun**: `generate_news.py` short-circuits only when `data.json`
+  already has the full daily target (3) for today (JST). After a successful
+  run, reruns are no-ops; after a red run, reruns retry from scratch.
 - **Pages build verification step ⚠️**: the final "Verify GitHub Pages build"
   step is informational; a yellow warning there does not fail the run — Pages
   builds occasionally lag past 60s.

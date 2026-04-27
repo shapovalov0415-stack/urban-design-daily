@@ -31,6 +31,10 @@ ARCHIVE_DIR = ROOT / "archive"
 
 MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
 
+# Hard guarantees for the daily run.
+TARGET_ARTICLES = 3
+MAX_ATTEMPTS = 4
+
 # Tokyo date — the site is run on JST schedule.
 TODAY = _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=9))).date()
 TODAY_STR = TODAY.isoformat()
@@ -39,14 +43,16 @@ PROMPT_TEMPLATE = """\
 You are curating a daily English-language digest of urban-design news for a
 practising urban designer based in Melbourne who reads globally.
 
-Today is {today} (Tokyo time). Find THREE fresh articles published in the last
-~7 days from reputable urban-design / architecture / planning outlets. Aim for a
-balanced mix across regions (e.g. Australia, US, Europe, Asia) and themes
+Today is {today} (Tokyo time). Find {needed} fresh article(s) published in the
+last ~7 days from reputable urban-design / architecture / planning outlets. Aim
+for a balanced mix across regions (e.g. Australia, US, Europe, Asia) and themes
 (housing, public realm, transit/TOD, zoning & policy, climate adaptation,
 heritage). Avoid pure starchitecture / building-only stories — favour pieces
 with planning, policy, urban form, or city-scale implications.
 
-DEDUP: do NOT pick any article whose URL is in this list:
+DEDUP — CRITICAL: do NOT pick any article whose URL is in this list. If you
+are about to pick one, pick a different story instead. Picking duplicates
+breaks the pipeline.
 {existing_urls}
 
 Use web_search aggressively. Prefer ArchitectureAU, Planetizen, The Guardian
@@ -64,8 +70,9 @@ For each article, write:
 - whyItMatters: 1-2 sentences on the implication for urban designers.
 - topics: 3-5 short tags (e.g. ["Melbourne", "Housing", "Policy"]).
 
-Return ONLY a JSON object — no prose before or after — wrapped in a fenced
-```json``` code block, of the form:
+Return EXACTLY {needed} article object(s) — no more, no fewer — as a JSON
+object with no prose before or after, wrapped in a fenced ```json``` code
+block, of the form:
 
 ```json
 {{
@@ -77,9 +84,7 @@ Return ONLY a JSON object — no prose before or after — wrapped in a fenced
       "summary": "...",
       "whyItMatters": "...",
       "topics": ["...", "..."]
-    }},
-    {{ ... }},
-    {{ ... }}
+    }}
   ]
 }}
 ```
@@ -97,11 +102,12 @@ def existing_urls(data: dict) -> list[str]:
     return [a.get("url", "") for a in data.get("articles", []) if a.get("url")]
 
 
-def call_claude(existing: list[str]) -> dict:
+def call_claude(existing: list[str], needed: int) -> dict:
     client = anthropic.Anthropic()  # uses ANTHROPIC_API_KEY env
     prompt = PROMPT_TEMPLATE.format(
         today=TODAY_STR,
-        existing_urls=json.dumps(existing[-50:], indent=2, ensure_ascii=False),
+        needed=needed,
+        existing_urls=json.dumps(existing[-100:], indent=2, ensure_ascii=False),
     )
     resp = client.messages.create(
         model=MODEL,
@@ -196,32 +202,70 @@ def write_archive(appended: list[dict]) -> Path:
 def main() -> int:
     data = load_data()
 
-    if any(a.get("date", "").startswith(TODAY_STR) for a in data.get("articles", [])):
-        print(f"[skip] data.json already has entries for {TODAY_STR} — nothing to do.")
+    today_count = sum(
+        1 for a in data.get("articles", []) if a.get("date", "").startswith(TODAY_STR)
+    )
+    if today_count >= TARGET_ARTICLES:
+        print(
+            f"[skip] data.json already has {today_count}/{TARGET_ARTICLES} entries "
+            f"for {TODAY_STR} — nothing to do."
+        )
         return 0
 
-    print(f"[generate] {TODAY_STR} via {MODEL}")
-    payload = call_claude(existing_urls(data))
-    new_articles = payload.get("articles") or []
-    if len(new_articles) < 3:
+    print(
+        f"[generate] {TODAY_STR} via {MODEL}, "
+        f"target={TARGET_ARTICLES}, already_have={today_count}"
+    )
+
+    appended_all: list[dict] = []
+    last_error: Exception | None = None
+
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        needed = TARGET_ARTICLES - today_count - len(appended_all)
+        if needed <= 0:
+            break
+        print(f"[attempt {attempt}/{MAX_ATTEMPTS}] requesting {needed} more")
+        try:
+            payload = call_claude(existing_urls(data), needed)
+        except Exception as e:
+            last_error = e
+            print(f"  attempt {attempt} failed: {e}", file=sys.stderr)
+            continue
+        candidates = payload.get("articles") or []
+        appended_this = append_articles(data, candidates)
+        appended_all.extend(appended_this)
         print(
-            f"WARNING: model returned {len(new_articles)} articles (expected 3).",
-            file=sys.stderr,
+            f"  attempt {attempt}: model returned {len(candidates)}, "
+            f"appended {len(appended_this)} unique "
+            f"(running total {len(appended_all)}/{TARGET_ARTICLES - today_count})"
         )
 
-    appended = append_articles(data, new_articles)
-    if not appended:
-        print("ERROR: no new (deduped) articles to append.", file=sys.stderr)
+    if not appended_all:
+        msg = "no new (deduped) articles to append after retries"
+        if last_error:
+            msg += f"; last error: {last_error}"
+        print(f"ERROR: {msg}", file=sys.stderr)
         return 1
 
+    # Persist whatever we got — partial day is better than nothing.
     with DATA_PATH.open("w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    archive_path = write_archive(appended)
-    print(f"[ok] appended {len(appended)} articles → {DATA_PATH.name}")
+    archive_path = write_archive(appended_all)
+    final_today = today_count + len(appended_all)
+    status = "ok" if final_today >= TARGET_ARTICLES else "partial"
+    print(f"[{status}] appended {len(appended_all)} articles → {DATA_PATH.name}")
     print(f"[ok] wrote {archive_path.relative_to(ROOT)}")
-    for a in appended:
+    for a in appended_all:
         print(f"  - {a['id']} | {a['title'][:80]}")
+
+    if final_today < TARGET_ARTICLES:
+        print(
+            f"ERROR: only have {final_today}/{TARGET_ARTICLES} articles for "
+            f"{TODAY_STR} after {MAX_ATTEMPTS} attempts.",
+            file=sys.stderr,
+        )
+        return 1
     return 0
 
 
