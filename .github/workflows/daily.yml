@@ -2,10 +2,13 @@ name: Daily urban design digest
 
 on:
   schedule:
-    # 17:00 UTC = 03:00 AEST (winter) / 04:00 AEDT (summer) Melbourne, next day.
-    # Scheduled this early to absorb GHA cron drift (typically <30min, can be
-    # 1–2h under load) so articles reliably land before 06:00 Melbourne local.
-    - cron: "0 17 * * *"
+    # 14:00 UTC = 00:00 AEST (winter) / 01:00 AEDT (summer) Melbourne, next day.
+    # Empirical GHA cron drift on this repo has been 2–3.5 hours, so we book
+    # 4h of slack to reliably finish before 06:00 Melbourne local. Worst-case
+    # 4h drift = 18:00 UTC = 04:00 AEST / 05:00 AEDT, leaving ~1h margin
+    # before the SLA. generate_news.py uses Australia/Melbourne for TODAY,
+    # so the date is correct in either AEST or AEDT.
+    - cron: "0 14 * * *"
   workflow_dispatch: # allow manual runs from GitHub UI
 
 permissions:

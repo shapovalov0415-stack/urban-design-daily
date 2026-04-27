@@ -14,12 +14,13 @@ Actions instead of the local Mac launchd job + Cowork scheduled tasks.
 
 ## Cron
 
-Workflow runs once per day at **17:00 UTC** = **03:00 AEST / 04:00 AEDT
-Melbourne (next day)**, plus `workflow_dispatch` for manual runs from the
-GitHub UI. Scheduled this early to absorb GHA cron drift so articles reliably
-land before 06:00 Melbourne local. `generate_news.py` still tags articles with
-the JST date — at 17:00+ UTC, JST and Melbourne dates always agree, so no
-date-skew issues.
+Workflow runs once per day at **14:00 UTC** = **00:00 AEST (winter) /
+01:00 AEDT (summer) Melbourne (next day)**, plus `workflow_dispatch` for
+manual runs from the GitHub UI. Scheduled this early because empirical GHA
+cron drift on this repo has been 2–3.5 hours; with 4h of slack the run
+reliably lands before 06:00 Melbourne local. `generate_news.py` uses the
+`Australia/Melbourne` timezone for `TODAY`, so the digest is dated by the
+reader's local calendar (AEST/AEDT auto-detected).
 
 ## Required setup (one-time)
 

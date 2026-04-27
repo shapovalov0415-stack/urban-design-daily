@@ -25,6 +25,11 @@ except ImportError:
     print("ERROR: anthropic package missing. Run: pip install -r requirements.txt", file=sys.stderr)
     raise
 
+try:
+    from zoneinfo import ZoneInfo  # py3.9+
+except ImportError:  # pragma: no cover
+    from backports.zoneinfo import ZoneInfo  # type: ignore
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA_PATH = ROOT / "data.json"
 ARCHIVE_DIR = ROOT / "archive"
@@ -35,16 +40,20 @@ MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
 TARGET_ARTICLES = 3
 MAX_ATTEMPTS = 4
 
-# Tokyo date — the site is run on JST schedule.
-TODAY = _dt.datetime.now(_dt.timezone(_dt.timedelta(hours=9))).date()
+# Site is read by a Melbourne-based user; date the digest by Melbourne local
+# day so the calendar matches what the reader sees on their morning. Handles
+# AEST/AEDT automatically via tzdata.
+MELBOURNE = ZoneInfo("Australia/Melbourne")
+TODAY = _dt.datetime.now(MELBOURNE).date()
 TODAY_STR = TODAY.isoformat()
 
 PROMPT_TEMPLATE = """\
 You are curating a daily English-language digest of urban-design news for a
 practising urban designer based in Melbourne who reads globally.
 
-Today is {today} (Tokyo time). Find {needed} fresh article(s) published in the
-last ~7 days from reputable urban-design / architecture / planning outlets. Aim
+Today is {today} (Melbourne local date). Find {needed} fresh article(s)
+published in the last ~7 days from reputable urban-design / architecture /
+planning outlets. Aim
 for a balanced mix across regions (e.g. Australia, US, Europe, Asia) and themes
 (housing, public realm, transit/TOD, zoning & policy, climate adaptation,
 heritage). Avoid pure starchitecture / building-only stories — favour pieces
