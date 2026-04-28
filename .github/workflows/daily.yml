@@ -71,7 +71,7 @@ jobs:
       - name: Verify GitHub Pages build
         if: success()
         run: |
-          DATE=$(TZ=Asia/Tokyo date +%Y-%m-%d)
+          DATE=$(TZ=Australia/Melbourne date +%Y-%m-%d)
           echo "Waiting 60s for Pages build..."
           sleep 60
           if curl -sSL https://shapovalov0415-stack.github.io/urban-design-daily/ | grep -q "$DATE"; then
@@ -79,3 +79,20 @@ jobs:
           else
             echo "⚠️  ${DATE} not yet visible on the live site (Pages build may still be in progress)."
           fi
+
+      - name: Verify daily target (3 articles)
+        if: always()
+        run: |
+          DATE=$(TZ=Australia/Melbourne date +%Y-%m-%d)
+          COUNT=$(python3 -c "
+          import json
+          d = json.load(open('data.json'))
+          n = sum(1 for a in d.get('articles', []) if a.get('date','') == '$DATE')
+          print(n)
+          ")
+          echo "Articles dated ${DATE}: ${COUNT}/3"
+          if [ "$COUNT" -lt 3 ]; then
+            echo "::error::Only ${COUNT}/3 articles for ${DATE}. Rerun manually to backfill."
+            exit 1
+          fi
+          echo "✅ Daily target met."

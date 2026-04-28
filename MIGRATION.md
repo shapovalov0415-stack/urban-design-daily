@@ -66,12 +66,24 @@ that token. Ad hoc local pushes after rotation will use SSH or `gh auth login`.
   after a successful API call.
 - **Hard target of 3 articles/day**: `generate_news.py` retries the model up
   to 4 times, asking for "the missing N" each pass and feeding back the
-  cumulative dedup list. If after all retries we still have fewer than 3, the
-  script exits 1 (run shows red) and the workflow stops before commit — so
-  the partial state never leaks to `main`. Manual rerun starts fresh.
-- **Same-day rerun**: `generate_news.py` short-circuits only when `data.json`
-  already has the full daily target (3) for today (JST). After a successful
-  run, reruns are no-ops; after a red run, reruns retry from scratch.
+  cumulative dedup list. There is a 70-second sleep between attempts to let
+  the Anthropic 30k-tokens/min rate-limit window roll over. The script
+  always exits 0 when it produced ≥1 article — partial days *are* committed
+  so the live site has content. A final workflow step "Verify daily target"
+  fails the run red when `data.json` ends with fewer than 3 articles for the
+  Melbourne date, so the gap stays visible and you can rerun manually to
+  backfill.
+- **Same-day rerun**: `generate_news.py` short-circuits only when
+  `data.json` already has the full daily target (3) for the Melbourne date.
+  After a partial day, a rerun reads the existing N entries and asks the
+  model for the missing 3-N — a clean backfill.
+- **GHA cron drift caveat**: empirical drift on this repo's scheduled runs
+  has been 2–5 hours during peak UTC. The 14:00 UTC schedule with 4h of
+  slack works *most* days; on a 5h-drift day we hit the AEDT 06:00 deadline
+  by minutes. If a missed-SLA day is unacceptable, options are: (a) add a
+  paid GHA tier or self-hosted runner, (b) replace GHA cron with an external
+  trigger (Cloudflare Cron Triggers / AWS EventBridge → `workflow_dispatch`
+  via REST API), or (c) live with occasional ~07:00 deliveries.
 - **Pages build verification step ⚠️**: the final "Verify GitHub Pages build"
   step is informational; a yellow warning there does not fail the run — Pages
   builds occasionally lag past 60s.

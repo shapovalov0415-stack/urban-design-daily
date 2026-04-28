@@ -17,6 +17,7 @@ import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 
 try:
@@ -39,6 +40,10 @@ MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
 # Hard guarantees for the daily run.
 TARGET_ARTICLES = 3
 MAX_ATTEMPTS = 4
+# Anthropic free/standard tier is 30k input tokens/min. A single web_search
+# call in this script burns ~10–20k tokens, so back-to-back retries trip the
+# limit. Sleep ~70s between attempts to let the per-minute window roll over.
+RETRY_BACKOFF_SEC = 70
 
 # Site is read by a Melbourne-based user; date the digest by Melbourne local
 # day so the calendar matches what the reader sees on their morning. Handles
@@ -233,6 +238,9 @@ def main() -> int:
         needed = TARGET_ARTICLES - today_count - len(appended_all)
         if needed <= 0:
             break
+        if attempt > 1:
+            print(f"  sleeping {RETRY_BACKOFF_SEC}s for rate-limit window…")
+            time.sleep(RETRY_BACKOFF_SEC)
         print(f"[attempt {attempt}/{MAX_ATTEMPTS}] requesting {needed} more")
         try:
             payload = call_claude(existing_urls(data), needed)
@@ -268,13 +276,18 @@ def main() -> int:
     for a in appended_all:
         print(f"  - {a['id']} | {a['title'][:80]}")
 
+    # Always exit 0 if we have ANY new articles — the downstream workflow
+    # commits them so the live site shows partial-day content rather than
+    # nothing. A separate "Verify daily target" step at the end of the
+    # workflow turns the run red when final_today < TARGET_ARTICLES, so the
+    # gap is still surfaced and the user can manually rerun to backfill.
     if final_today < TARGET_ARTICLES:
         print(
-            f"ERROR: only have {final_today}/{TARGET_ARTICLES} articles for "
-            f"{TODAY_STR} after {MAX_ATTEMPTS} attempts.",
+            f"WARNING: only have {final_today}/{TARGET_ARTICLES} articles for "
+            f"{TODAY_STR} after {MAX_ATTEMPTS} attempts. "
+            f"Partial day committed; rerun manually to backfill.",
             file=sys.stderr,
         )
-        return 1
     return 0
 
 
