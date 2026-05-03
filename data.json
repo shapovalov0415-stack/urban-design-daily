@@ -505,7 +505,7 @@
       "title": "Madrid v. Barcelona: How Spain's Largest Cities Are Tackling Affordable Housing",
       "source": "Bloomberg CityLab",
       "url": "https://www.bloomberg.com/news/articles/2026-04-27/madrid-v-barcelona-how-spain-s-largest-cities-are-tackling-affordable-housing",
-      "thumbnail": "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800",
+      "thumbnail": "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iZ8GSZqR4QUA/v0/1200x660.jpg",
       "summary": "Spain's two largest cities are pursuing dramatically different strategies to address housing affordability crises, offering a real-time natural experiment in urban policy. Madrid is betting on large-scale construction and lower taxes to increase supply and improve affordability, setting higher construction targets and reducing regulatory barriers. Barcelona, by contrast, is leaning heavily on regulatory interventions to curb prices, including a ban on short-term rentals that aims to return housing stock to the long-term market. The policy divergence comes as both cities experience strong economic growth and job creation but struggle to ease housing pressures for residents. Despite their contrasting approaches, both cities face a broader structural failure to accommodate rising urban populations. The article was published during Bloomberg CityLab 2026 in Madrid (April 27-29), where over 1,000 mayors and policymakers gathered to discuss urban challenges including the global housing crisis. The summit featured London Mayor Sadiq Khan and Barcelona Mayor Jaume Collboni, among other leaders sharing insights on housing stock expansion, zoning reform, and innovative financing models. The housing debate reflects deeper questions about the role of market forces versus regulation in shaping affordable cities.",
       "whyItMatters": "The Madrid-Barcelona comparison offers urban designers a clear policy dichotomy—supply-side construction stimulus versus demand-side regulatory constraint—with immediate lessons for cities worldwide grappling with affordability and the trade-offs between growth, regulation, and access.",
       "topics": [
@@ -641,7 +641,7 @@
       "title": "A Lesson From Urban Icons on Designing Public Space: Get Rid of Traffic",
       "source": "CityLab (Bloomberg)",
       "url": "https://www.bloomberg.com/news/articles/2026-04-29/anne-hidalgo-and-norman-foster-have-lessons-on-designing-public-space",
-      "thumbnail": "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800",
+      "thumbnail": "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/ibbLk4NQkvhY/v1/1200x800.jpg",
       "summary": "At a closed-door mayoral forum during the Bloomberg CityLab conference in Madrid on April 27, 2026, former Paris Mayor Anne Hidalgo and British architect Norman Foster shared success stories about using design to improve environmental and economic outcomes in cities. Hidalgo, who was born in Cádiz, Spain, discussed three strategies she employed during her tenure, including her work to make the Seine clean enough to swim—a project inspired by her childhood love of swimming on Spain's oceanside beaches. The forum, organized by Bloomberg Philanthropies and the Aspen Institute, brought together dozens of mayors in Madrid to discuss city transformation. Both urban visionaries talked about a shared strategy behind their successful visions: reducing traffic to create better public spaces. The conference, held April 27-29, 2026, convened more than 700 mayors, policymakers, innovators, and creatives to address major issues facing cities worldwide including AI, housing and affordability, and the role of cities as bulwarks of democracy in an era of polarization. The 12th Bloomberg CityLab focused on strengthening city-to-city connections and confronting urgent shared challenges. Featured speakers included Michael R. Bloomberg, Nadia Calviño (President of the European Investment Bank), Norman Foster, and José Luis Martínez-Almeida (Mayor of Madrid). More than 100 city leaders attended the Mayors Innovation Studio on April 27, which challenged mayors to rethink design as one of the most powerful tools of city leadership.",
       "whyItMatters": "The convergence of political and design leadership around traffic reduction as a core strategy for better public space demonstrates a maturing global consensus on urban design priorities, with direct lessons from two of Europe's most influential urban figures.",
       "topics": [
@@ -718,6 +718,57 @@
         "Urban Heat",
         "Singapore",
         "Spain"
+      ]
+    },
+    {
+      "id": "2026-05-04-001",
+      "date": "2026-05-04",
+      "title": "Azerbaijan Declares 2026 the 'Year of Urban Planning and Architecture' as Baku Prepares to Host WUF13",
+      "source": "ArchDaily",
+      "url": "https://www.archdaily.com/1037524/azerbaijan-declares-2026-the-year-of-urban-planning-and-architecture-as-baku-prepares-to-host-wuf13",
+      "thumbnail": "https://images.adsttc.com/media/images/695c/e428/6fd2/4d01/88fb/fac0/large_jpg/azerbaijan-declares-2026-the-year-of-urban-planning-and-architecture-as-baku-prepares-to-host-wuf13_5.jpg?1767695448",
+      "summary": "President Ilham Aliyev has signed an order declaring 2026 the 'Year of Urban Planning and Architecture' in Azerbaijan, establishing a national framework focused on urban planning policy, architectural culture, and sustainable development. The declaration aligns with Azerbaijan's preparations to host the 13th World Urban Forum (WUF13) in Baku from 17 to 22 May 2026, organized by UN-Habitat under the theme 'Housing the World: Safe and Resilient Cities and Communities.' The forum will address the global housing crisis affecting nearly 3 billion people worldwide experiencing housing inadequacy, examining housing as a foundation for inclusive, resilient, and sustainable urban development linked to integrated planning, climate adaptation, and inclusive governance. The organizers note the significance of 2026 as a milestone year, marking a decade since the adoption of the New Urban Agenda at Habitat III in Quito, coinciding with the UN Secretary-General's mid-term review and the assessment of SDG 11 at the High-Level Political Forum. Azerbaijan's Chairman of the State Committee on Urban Planning and Architecture, Anar Guliyev, has been coordinating with regional partners including Kyrgyzstan to build strategic partnerships and encourage participation in WUF13. The initiative positions Azerbaijan within global discussions on housing, sustainability, and the future of cities while emphasizing balanced regional development and alignment with international sustainability frameworks.",
+      "whyItMatters": "This signals a major international urban policy moment as the World Urban Forum provides a critical platform for global housing and urban development debates, with particular relevance for practitioners working on SDG implementation, climate-responsive planning, and housing adequacy frameworks at city scale.",
+      "topics": [
+        "Azerbaijan",
+        "Housing",
+        "Policy",
+        "UN-Habitat",
+        "Sustainability"
+      ]
+    },
+    {
+      "id": "2026-05-04-002",
+      "date": "2026-05-04",
+      "title": "How Five Texas Convention Centres Are Changing the State's Biggest Cities",
+      "source": "Dezeen",
+      "url": "https://www.dezeen.com/2026/04/16/texas-convention-centres-urban-development-mazade/",
+      "thumbnail": "https://static.dezeen.com/uploads/2026/04/texas-convention-center-architecture-renderings-feature_dezeen_2364_sq1.jpg",
+      "summary": "Nearly $9 billion in convention centre design and construction is currently underway across Texas's five biggest cities—Austin, Dallas, Fort Worth, Houston, and San Antonio—representing a significant shift in how these once-hermetic buildings that disrupted the urban environment are being reimagined to create connections through the city fabric. Michael Lockwood, senior principal at Populous overseeing projects in Dallas, Houston and San Antonio, attributes the resurgence to a 'perfect storm of conditions' driven by changing state legislation and a comeback for in-person business meetings. Modifications to state legislation have allowed municipalities to tap into additional funding for renovations, expansions and rebuilds. In Austin, the convention centre project—a joint venture by LMN Architects and Page—relocates loading docks and 336,000 square feet of exhibition space below ground to reconnect the urban grid of downtown, recreating the scale of city blocks and reducing the overall footprint. The project aims to become the first International Living Future Institute-certified carbon-neutral convention centre globally, with carbon reduction elements including heavy timber structure in the ballroom and reuse of materials from the demolished building. Fort Worth announced the second phase of its $700 million convention centre project in early February 2026. The trend reflects cities' desire to reduce 'dark days'—set up and tear down time—by hosting overlapping events in different portions of facilities, allowing for rolling rental income while integrating facilities more thoughtfully with their urban contexts.",
+      "whyItMatters": "The scale of investment and the shift from hermetic mega-structures to urban-integrated, carbon-conscious designs illustrates how cities are using policy levers and large public infrastructure to reconnect fragmented downtowns while addressing climate goals—a model applicable to convention districts globally.",
+      "topics": [
+        "Texas",
+        "Urban Form",
+        "Policy",
+        "Public Realm",
+        "Climate"
+      ]
+    },
+    {
+      "id": "2026-05-04-003",
+      "date": "2026-05-04",
+      "title": "Milan Design Week 2026 Selection and Wasl Tower in Dubai: This Week's Review",
+      "source": "ArchDaily",
+      "url": "https://www.archdaily.com/1041100/milan-design-week-2026-selection-and-wasl-tower-in-dubai-this-weeks-review",
+      "thumbnail": "https://images.adsttc.com/media/images/69f3/226d/c748/9401/89fb/9630/large_jpg/milan-design-week-2026-selection-and-wasl-tower-in-dubai-this-weeks-review_1.jpg?1777541755",
+      "summary": "This week's urban developments highlight how architecture continues to mediate between preservation and transformation through strategies of access and adaptive reuse across multiple scales and geographies. In Rome, STARTT's Pantheon Micro Architectures for Archaeology project introduces a new visitor route through previously inaccessible areas behind the Rotunda, revealing layers of archaeological fabric while maintaining clear distinction between contemporary interventions and ancient material—rather than restoring the monument itself, the project reframes its broader urban and historical context. A parallel approach emerges in Minneapolis, where Minoru Yamasaki's former Northwestern National Life Insurance Company headquarters is set to be converted into a hotel, demonstrating adaptive reuse of mid-century corporate architecture. Meanwhile, in Rome's Municipio XIII, Piazza della Stazione Cornelia has been transformed from a parking area and weekly market site into a structured public space with complementary green landscaped zones with newly planted trees and shaded resting areas alongside mineral paved surfaces designed for flexible use and community activities. A continuous paving strategy ties the composition together while the adjacent municipal building, now home to the Biblioteca Cornelia, extends the intervention's civic role with co-working, study, and multifunctional community spaces, reinforcing the square as a focal point of social and urban exchange. These developments reflect processes of transformation, reinterpretation, and public engagement that operate across multiple temporalities, balancing preservation with contemporary use and spatial continuity with evolving cultural programs.",
+      "whyItMatters": "The projects demonstrate how tactical urban interventions—from archaeological access strategies to parking-to-plaza conversions—can recalibrate existing urban fabric without wholesale redevelopment, offering replicable models for heritage-sensitive placemaking and incremental urban repair.",
+      "topics": [
+        "Europe",
+        "Public Realm",
+        "Heritage",
+        "Adaptive Reuse",
+        "Urban Form"
       ]
     }
   ]
