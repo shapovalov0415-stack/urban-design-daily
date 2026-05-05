@@ -1,0 +1,76 @@
+name: Check API key
+
+# Minimal sanity test for the ANTHROPIC_API_KEY repo secret. Makes one tiny
+# (5-token, no-tools) API call and reports auth/quota status. ~$0.0001/run.
+# Run manually after rotating the key:
+#   gh workflow run "Check API key" -R shapovalov0415-stack/urban-design-daily
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install anthropic
+        run: pip install -r requirements.txt
+
+      - name: Ping Anthropic API
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_MODEL: ${{ vars.ANTHROPIC_MODEL || 'claude-sonnet-4-5' }}
+        run: |
+          python3 <<'PY'
+          import os, sys
+          import anthropic
+
+          key = os.environ.get("ANTHROPIC_API_KEY", "")
+          if not key:
+              print("::error::ANTHROPIC_API_KEY is empty/unset.")
+              sys.exit(2)
+          # Don't print the key. Just a fingerprint.
+          print(f"key length: {len(key)} chars, prefix: {key[:7]}…")
+
+          client = anthropic.Anthropic()
+          model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+          try:
+              resp = client.messages.create(
+                  model=model,
+                  max_tokens=5,
+                  messages=[{"role": "user", "content": "Reply with one word: ok"}],
+              )
+          except anthropic.AuthenticationError as e:
+              print(f"::error::Auth failed (401): {e}")
+              sys.exit(1)
+          except anthropic.PermissionDeniedError as e:
+              print(f"::error::Permission denied (403): {e}")
+              sys.exit(1)
+          except anthropic.RateLimitError as e:
+              print(f"::error::Rate-limited (429) — key works but quota tight: {e}")
+              sys.exit(1)
+          except Exception as e:
+              print(f"::error::Unexpected error: {type(e).__name__}: {e}")
+              sys.exit(1)
+
+          text = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text").strip()
+          usage = resp.usage
+          print(f"✅ Key works. model={model}")
+          print(f"   reply: {text!r}")
+          print(f"   usage: input={usage.input_tokens} output={usage.output_tokens}")
+          PY
