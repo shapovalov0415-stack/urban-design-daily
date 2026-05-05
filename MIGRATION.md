@@ -64,15 +64,20 @@ that token. Ad hoc local pushes after rotation will use SSH or `gh auth login`.
 - **Anthropic API error**: workflow fails; rerun manually or wait for next
   day's cron. No partial commits because the script writes data.json only
   after a successful API call.
-- **Hard target of 3 articles/day**: `generate_news.py` retries the model up
-  to 4 times, asking for "the missing N" each pass and feeding back the
-  cumulative dedup list. There is a 70-second sleep between attempts to let
-  the Anthropic 30k-tokens/min rate-limit window roll over. The script
-  always exits 0 when it produced ≥1 article — partial days *are* committed
-  so the live site has content. A final workflow step "Verify daily target"
-  fails the run red when `data.json` ends with fewer than 3 articles for the
-  Melbourne date, so the gap stays visible and you can rerun manually to
-  backfill.
+- **Hard target of 3 articles/day, ≥1 Australian**: `generate_news.py`
+  retries the model up to 4 times, asking for "the missing N" each pass and
+  feeding back the cumulative dedup list. The prompt also enforces a
+  regional constraint: at least 1 of the 3 must be Australia-domestic
+  (federal/state policy, an Australian city's planning news, etc.). The
+  script tracks Australian count using the article's `topics` tags
+  (case-insensitive match against a fixed Australia/state/city list). On
+  each retry it tells the model how many AU articles are still needed.
+  There is a 70-second sleep between attempts to let the Anthropic
+  30k-tokens/min rate-limit window roll over. The script always exits 0
+  when it produced ≥1 article — partial days *are* committed so the live
+  site has content. A final workflow step "Verify daily target" fails the
+  run red when `data.json` ends with fewer than 3 articles or zero
+  Australian articles for the Melbourne date, so any gap stays visible.
 - **Same-day rerun**: `generate_news.py` short-circuits only when
   `data.json` already has the full daily target (3) for the Melbourne date.
   After a partial day, a rerun reads the existing N entries and asks the
