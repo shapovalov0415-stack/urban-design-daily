@@ -44,9 +44,10 @@ MAX_ATTEMPTS = 4
 # Anthropic standard tier is 30k input tokens/min. A single web_search-enabled
 # call burns ~95–100k input tokens at max_uses=4 because each search iteration
 # re-sends the full context, which trips 429 within a single attempt. Drop to
-# max_uses=3 (~70–75k tokens/call, ~25% saving) and keep 90s retry sleep so
-# two consecutive attempts don't share a rate-limit window.
-WEB_SEARCH_MAX_USES = 3
+# max_uses=2 (~50k tokens/call, ~50% saving) — still enough exploration for
+# 1–3 articles per call. Once auto-promoted to Tier 2 (65k/min) this also
+# means single calls fit under the limit and retries become unnecessary.
+WEB_SEARCH_MAX_USES = 2
 RETRY_BACKOFF_SEC = 90
 
 # Topics that mark an article as Australia-domestic. The prompt instructs the
