@@ -42,12 +42,11 @@ TARGET_ARTICLES = 3
 MIN_AUSTRALIA = 1  # at least this many of TARGET must be Australia-domestic
 MAX_ATTEMPTS = 4
 # Anthropic standard tier is 30k input tokens/min. A single web_search-enabled
-# call burns 25–40k tokens because each search iteration re-sends the full
-# context. We've seen single calls exceed 30k in one go and trip 429.
-# Mitigations: (1) cap web_search at 4 iterations (was 8) to roughly halve
-# per-call tokens; (2) wait 90s between retries so two consecutive attempts
-# don't share a rate-limit window. With both, two attempts ~3 minutes apart.
-WEB_SEARCH_MAX_USES = 4
+# call burns ~95–100k input tokens at max_uses=4 because each search iteration
+# re-sends the full context, which trips 429 within a single attempt. Drop to
+# max_uses=3 (~70–75k tokens/call, ~25% saving) and keep 90s retry sleep so
+# two consecutive attempts don't share a rate-limit window.
+WEB_SEARCH_MAX_USES = 3
 RETRY_BACKOFF_SEC = 90
 
 # Topics that mark an article as Australia-domestic. The prompt instructs the
