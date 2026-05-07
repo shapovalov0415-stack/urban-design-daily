@@ -905,6 +905,23 @@
         "Public Health",
         "Infrastructure"
       ]
+    },
+    {
+      "id": "2026-05-07-003",
+      "date": "2026-05-07",
+      "title": "Affordable Housing and Transit Series: New Jersey",
+      "source": "Eno Center for Transportation",
+      "url": "https://enotrans.org/article/affordable-housing-and-transit-series-new-jersey/",
+      "thumbnail": "https://enotrans.org/wp-content/uploads/2026/05/njtransit_garrisongao-1030x579.jpg",
+      "summary": "New Jersey has emerged as a national model for integrating affordable housing mandates with transit-oriented development through a multi-layered strategy involving state agencies, transit authorities, and municipalities. The state's Transit Village Initiative—co-managed by NJ DOT and NJ Transit—has designated 37 transit villages as of 2026, providing priority funding, technical assistance, and grant eligibility to municipalities committed to redeveloping areas around transit stations. NJ Transit's policy requires 20 percent of newly built residential units in TOD projects on agency-owned land to be reserved for low- and moderate-income households. In October 2025, the agency launched the LAND Plan (Leveraging Assets for Non-farebox Dollars), a 30-year strategy to unlock the economic potential of its 8,000-acre real estate portfolio. If fully implemented, the plan projects up to $1.9 billion in potential revenue, 50,000 jobs, 20,000 housing units—including 4,000 affordable units—and $14 billion in state economic activity. NJ Transit plans to solicit development proposals for several sites in 2026 using a competitive public process. The agency has also partnered with Rutgers University's Voorhees Transportation Center to develop a Transit Friendly Data Application, which aggregates station-area data on demographics, land use, environmental conditions, real estate, and transit availability, giving planners and developers a unified resource to evaluate TOD potential across the state. Despite these tools, New Jersey faces a geographic affordability divide: the New York-Newark-Jersey City metro area scored 81 on the National Association of Realtors Affordability Index, placing it among the least affordable markets, while South Jersey shows relatively higher affordability ratios though renters still face significant challenges.",
+      "whyItMatters": "New Jersey's 30-year LAND Plan demonstrates how transit agencies can monetise underutilised land portfolios to deliver both infrastructure revenue and affordable housing at scale—a financing model relevant to Australian agencies managing large land banks near high-frequency transit. The 20 percent affordability requirement and integrated data platform offer templates for state-level TOD coordination that could inform upcoming reforms in Melbourne, Sydney, and Brisbane.",
+      "topics": [
+        "Transit-Oriented Development",
+        "Affordable Housing",
+        "Policy",
+        "United States",
+        "Infrastructure Finance"
+      ]
     }
   ]
 }
