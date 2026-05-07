@@ -41,10 +41,14 @@ MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
 TARGET_ARTICLES = 3
 MIN_AUSTRALIA = 1  # at least this many of TARGET must be Australia-domestic
 MAX_ATTEMPTS = 4
-# Anthropic free/standard tier is 30k input tokens/min. A single web_search
-# call in this script burns ~10–20k tokens, so back-to-back retries trip the
-# limit. Sleep ~70s between attempts to let the per-minute window roll over.
-RETRY_BACKOFF_SEC = 70
+# Anthropic standard tier is 30k input tokens/min. A single web_search-enabled
+# call burns 25–40k tokens because each search iteration re-sends the full
+# context. We've seen single calls exceed 30k in one go and trip 429.
+# Mitigations: (1) cap web_search at 4 iterations (was 8) to roughly halve
+# per-call tokens; (2) wait 90s between retries so two consecutive attempts
+# don't share a rate-limit window. With both, two attempts ~3 minutes apart.
+WEB_SEARCH_MAX_USES = 4
+RETRY_BACKOFF_SEC = 90
 
 # Topics that mark an article as Australia-domestic. The prompt instructs the
 # model to use these exact tags when picking Australian content; matching is
@@ -184,17 +188,39 @@ def call_claude(existing: list[str], needed: int, au_needed: int, au_have: int) 
             {
                 "type": "web_search_20250305",
                 "name": "web_search",
-                "max_uses": 8,
+                "max_uses": WEB_SEARCH_MAX_USES,
             }
         ],
         messages=[{"role": "user", "content": prompt}],
     )
+    # Surface token usage so we can monitor whether we're nearing the
+    # 30k-tokens/min ceiling.
+    usage = getattr(resp, "usage", None)
+    if usage is not None:
+        print(
+            f"    usage: input={usage.input_tokens} output={usage.output_tokens} "
+            f"stop={resp.stop_reason!r}"
+        )
     # Concatenate all text blocks (the final assistant turn after web_search loops).
     text_parts = [b.text for b in resp.content if getattr(b, "type", "") == "text"]
     text = "\n".join(text_parts).strip()
     if not text:
         raise RuntimeError(f"Empty model response. Stop reason: {resp.stop_reason!r}")
     return parse_json(text)
+
+
+# web_search-enabled responses sometimes embed citation markers like
+# <cite index="52-2,52-3">…</cite> around quoted text. Those are meant for
+# Anthropic's UI, not our JSON; strip them before persisting so they don't
+# show up on the live site.
+CITE_OPEN_RE = re.compile(r"<cite\b[^>]*>", re.IGNORECASE)
+CITE_CLOSE_RE = re.compile(r"</cite\s*>", re.IGNORECASE)
+
+
+def strip_citations(text: str) -> str:
+    if not text:
+        return text
+    return CITE_CLOSE_RE.sub("", CITE_OPEN_RE.sub("", text))
 
 
 def parse_json(text: str) -> dict:
@@ -236,13 +262,13 @@ def append_articles(data: dict, new_articles: list[dict]) -> list[dict]:
         entry = {
             "id": f"{TODAY_STR}-{seq:03d}",
             "date": TODAY_STR,
-            "title": (a.get("title") or "").strip(),
+            "title": strip_citations((a.get("title") or "").strip()),
             "source": (a.get("source") or "").strip(),
             "url": url,
             # Placeholder thumbnail — enrich_thumbnails.py replaces with og:image.
             "thumbnail": "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800",
-            "summary": (a.get("summary") or "").strip(),
-            "whyItMatters": (a.get("whyItMatters") or "").strip(),
+            "summary": strip_citations((a.get("summary") or "").strip()),
+            "whyItMatters": strip_citations((a.get("whyItMatters") or "").strip()),
             "topics": list(a.get("topics") or []),
         }
         data.setdefault("articles", []).append(entry)
