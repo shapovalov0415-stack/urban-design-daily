@@ -1,15 +1,18 @@
 name: Daily urban design digest
 
 on:
-  schedule:
-    # 14:00 UTC = 00:00 AEST (winter) / 01:00 AEDT (summer) Melbourne, next day.
-    # Empirical GHA cron drift on this repo has been 2–3.5 hours, so we book
-    # 4h of slack to reliably finish before 06:00 Melbourne local. Worst-case
-    # 4h drift = 18:00 UTC = 04:00 AEST / 05:00 AEDT, leaving ~1h margin
-    # before the SLA. generate_news.py uses Australia/Melbourne for TODAY,
-    # so the date is correct in either AEST or AEDT.
-    - cron: "0 14 * * *"
-  workflow_dispatch: # allow manual runs from GitHub UI
+  # NOTE: the daily schedule is intentionally disabled. Daily curation has
+  # been moved into a Claude Code scheduled task ("urban-design-daily-update"
+  # in ~/.claude/scheduled-tasks/) which uses the user's Claude subscription
+  # for the LLM work, eliminating Anthropic API spend (~$16-21/month → $0).
+  # This workflow is kept only as a manual fallback: trigger via
+  # `gh workflow run "Daily urban design digest"` if the Claude Code task
+  # falls behind or you need an API-backed backfill.
+  #
+  # Re-enable by uncommenting the `schedule` block below.
+  # schedule:
+  #   - cron: "0 14 * * *"
+  workflow_dispatch: # manual fallback / backfill
 
 permissions:
   contents: write

@@ -1,7 +1,17 @@
-# GitHub Actions Migration Notes
+# Pipeline Migration Notes
 
-This repo's daily article generation + deployment is now driven by GitHub
-Actions instead of the local Mac launchd job + Cowork scheduled tasks.
+> **Current state (since 2026-06-05):** daily curation runs as a Claude Code
+> scheduled task that uses the user's Claude subscription (no Anthropic API
+> spend). The GitHub Actions workflow is retained as a manual fallback only.
+> Details in [Generation runtime](#generation-runtime) below.
+
+This repo's daily article generation + deployment has gone through three
+runtimes:
+
+1. **Mac launchd + Cowork** (original) — local automation on the user's Mac.
+2. **GitHub Actions** (interim) — moved to GHA cron + Anthropic API.
+3. **Claude Code scheduled task** (current) — runs while the user has Claude
+   Code open, no API key needed.
 
 ## What runs where
 
@@ -12,15 +22,43 @@ Actions instead of the local Mac launchd job + Cowork scheduled tasks.
 | Re-inline `data.json` into `index.html` | `~/bin/urban-design-daily-push.sh` (inline Python) | `scripts/inline_data.py` |
 | Commit & push | Cowork scheduled task `deploy-urban-design-site` | last steps of `.github/workflows/daily.yml` |
 
-## Cron
+## Generation runtime
 
-Workflow runs once per day at **14:00 UTC** = **00:00 AEST (winter) /
-01:00 AEDT (summer) Melbourne (next day)**, plus `workflow_dispatch` for
-manual runs from the GitHub UI. Scheduled this early because empirical GHA
-cron drift on this repo has been 2–3.5 hours; with 4h of slack the run
-reliably lands before 06:00 Melbourne local. `generate_news.py` uses the
-`Australia/Melbourne` timezone for `TODAY`, so the digest is dated by the
-reader's local calendar (AEST/AEDT auto-detected).
+**Primary (since 2026-06-05): Claude Code scheduled task.**
+A task called `urban-design-daily-update` lives at
+`~/.claude/scheduled-tasks/urban-design-daily-update/SKILL.md` and fires at
+**06:00 Melbourne local time** every day. The task uses Claude Code's
+`WebSearch` tool to find articles, edits `data.json` directly, runs
+`scripts/enrich_thumbnails.py` + `scripts/inline_data.py`, and pushes the
+result to GitHub. Because the LLM work happens inside the Claude Code
+session, it is billed against the user's Claude subscription (Pro/Max),
+NOT against `ANTHROPIC_API_KEY` — monthly Anthropic API spend drops to $0.
+
+The task runs only when Claude Code is open. If the app is closed at 06:00,
+the run is deferred until next launch. Practical implication: open Claude
+Code at least once per day to keep the site fresh; expect occasional same-
+day "delivered at the morning's first launch" instead of "delivered at
+06:00 sharp".
+
+**Fallback (manual): GitHub Actions workflow.**
+The `.github/workflows/daily.yml` workflow is kept but its cron schedule is
+commented out. It can still be triggered manually for backfills via
+`gh workflow run "Daily urban design digest"` — that path still uses
+`ANTHROPIC_API_KEY` and incurs Anthropic API cost (~$0.30 per run), so use
+it sparingly.
+
+### Why we migrated off the GHA cron
+
+- **Cost:** May 2026 ran $16–21 on Anthropic API alone for ~30 runs. The
+  Claude Code task uses the existing subscription instead.
+- **Cron drift:** GHA scheduled events drift 2–5 hours during peak UTC,
+  which made the 06:00 Melbourne SLA unreliable on bad days.
+- **Rate limits:** Tier-1 30k tokens/min ceiling caused frequent 429-driven
+  partial-day runs that needed manual rerun anyway.
+
+The Claude Code task isn't free of caveats — it depends on the user opening
+Claude Code daily — but that constraint is easy to satisfy and is
+fundamentally cheaper than dedicated API calls.
 
 ## Required setup (one-time)
 
