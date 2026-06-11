@@ -31,6 +31,22 @@ def try_microlink(url: str) -> str | None:
     return ((payload.get("data") or {}).get("image") or {}).get("url")
 
 
+OG_PATTERNS = [
+    r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+    r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']',
+    r'<meta[^>]+name=["\']twitter:image["\'][^>]+content=["\']([^"\']+)["\']',
+    r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+name=["\']twitter:image["\']',
+]
+
+
+def _find_og(html: str) -> str | None:
+    for pat in OG_PATTERNS:
+        m = re.search(pat, html, re.IGNORECASE)
+        if m:
+            return m.group(1)
+    return None
+
+
 def try_direct(url: str) -> str | None:
     req = urllib.request.Request(
         url,
@@ -41,17 +57,30 @@ def try_direct(url: str) -> str | None:
         },
     )
     html = urllib.request.urlopen(req, timeout=20).read().decode("utf-8", errors="ignore")
-    patterns = [
-        r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
-        r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']',
-        r'<meta[^>]+name=["\']twitter:image["\'][^>]+content=["\']([^"\']+)["\']',
-        r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+name=["\']twitter:image["\']',
-    ]
-    for pat in patterns:
-        m = re.search(pat, html, re.IGNORECASE)
-        if m:
-            return m.group(1)
-    return None
+    return _find_og(html)
+
+
+def try_wayback(url: str) -> str | None:
+    """For Cloudflare-blocked sites (Planetizen, Bloomberg, IIASA, …) the
+    original page returns 403 but the Internet Archive often has a recent
+    snapshot. Look up the closest snapshot, scrape og:image out of its HTML,
+    and return the Wayback proxy URL — that URL serves the original image
+    indefinitely without going through the blocked origin."""
+    api = "https://archive.org/wayback/available?url=" + urllib.parse.quote(
+        url, safe=""
+    )
+    req = urllib.request.Request(api, headers={"User-Agent": "urban-design-daily/1.0"})
+    payload = json.loads(urllib.request.urlopen(req, timeout=15).read().decode("utf-8"))
+    snap = ((payload.get("archived_snapshots") or {}).get("closest") or {})
+    snap_url = snap.get("url")
+    if not snap_url or snap.get("status") != "200":
+        return None
+    # snap_url is http://… — upgrade to https for our (https) site to avoid mixed content.
+    if snap_url.startswith("http://"):
+        snap_url = "https://" + snap_url[len("http://"):]
+    req = urllib.request.Request(snap_url, headers={"User-Agent": UA})
+    html = urllib.request.urlopen(req, timeout=20).read().decode("utf-8", errors="ignore")
+    return _find_og(html)
 
 
 def main() -> int:
@@ -69,26 +98,26 @@ def main() -> int:
             continue
         img: str | None = None
         method = ""
-        try:
-            img = try_microlink(url)
-            if img:
-                method = "microlink"
-        except Exception:
-            pass
-        if not img:
+        last_err: str = ""
+        for fn, name in (
+            (try_microlink, "microlink"),
+            (try_direct, "direct"),
+            (try_wayback, "wayback"),
+        ):
             try:
-                img = try_direct(url)
+                img = fn(url)
                 if img:
-                    method = "direct"
+                    method = name
+                    break
             except Exception as e:
-                print(f"  (skip {a.get('id', '?')}: {str(e)[:60]})")
-                continue
+                last_err = f"{name}: {str(e)[:50]}"
         if img and img.startswith("http"):
             a["thumbnail"] = img
             changed += 1
             print(f"  [{method}] {a.get('id', '?')} -> {img[:70]}")
         else:
-            print(f"  (skip {a.get('id', '?')}: no image found)")
+            tail = f" ({last_err})" if last_err else ""
+            print(f"  (skip {a.get('id', '?')}: no image found{tail})")
 
     if changed:
         with DATA_PATH.open("w") as f:
