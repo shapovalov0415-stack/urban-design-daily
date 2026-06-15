@@ -1897,6 +1897,47 @@
         "Research",
         "Policy"
       ]
+    },
+    {
+      "id": "2026-06-16-001",
+      "date": "2026-06-16",
+      "title": "Kerbside parking is great for drivers – but terrible for everyone else. Could we get rid of it?",
+      "source": "The Conversation AU",
+      "url": "https://theconversation.com/kerbside-parking-is-great-for-drivers-but-terrible-for-everyone-else-could-we-get-rid-of-it-283687",
+      "thumbnail": "https://images.theconversation.com/files/739953/original/file-20260604-75-oeljuf.png?ixlib=rb-4.1.0&rect=0%2C50%2C1600%2C800&q=45&auto=format&w=1356&h=668&fit=crop",
+      "summary": "Australia largely has enough off-street parking to do away with unsightly kerbside parking – and free up space for bikes, pedestrians and scooters.",
+      "whyItMatters": "Surfaced by the daily RSS pipeline from The Conversation AU. Read the original for full context — automated summaries trade depth for reliability.",
+      "topics": [
+        "Australia",
+        "Active Transport",
+        "Public Realm"
+      ]
+    },
+    {
+      "id": "2026-06-16-002",
+      "date": "2026-06-16",
+      "title": "Earthquakes can be destructive for distant cities built on top of basins – now we know why",
+      "source": "The Conversation AU",
+      "url": "https://theconversation.com/earthquakes-can-be-destructive-for-distant-cities-built-on-top-of-basins-now-we-know-why-284731",
+      "thumbnail": "https://images.theconversation.com/files/741464/original/file-20260612-85-1ep3i.jpg?ixlib=rb-4.1.0&amp;rect=0%2C853%2C2048%2C1024&amp;q=45&amp;auto=format&amp;w=1356&amp;h=668&amp;fit=crop",
+      "summary": "Flat basins are favoured places to build cities. But seismic waves can get trapped in these basins, putting cities at risk from distant earthquakes.",
+      "whyItMatters": "Surfaced by the daily RSS pipeline from The Conversation AU. Read the original for full context — automated summaries trade depth for reliability.",
+      "topics": [
+        "Urban Design"
+      ]
+    },
+    {
+      "id": "2026-06-16-003",
+      "date": "2026-06-16",
+      "title": "Link between poverty and access to nature | Letter",
+      "source": "Guardian Cities",
+      "url": "https://www.theguardian.com/environment/2026/jun/10/link-between-poverty-and-access-to-nature",
+      "thumbnail": "https://i.guim.co.uk/img/media/20a18dcbbbf317c4324d011942bafc81dca83bb3/510_0_5165_4132/master/5165.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&precrop=40:21,offset-x50,offset-y0&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctZGVmYXVsdC5wbmc&enable=upscale&s=953bf9336d4496a4431633b5b6eb302f",
+      "summary": "Prof Kathy Willis responds to research showing that the poorest areas in the country face the deepest cuts to green spaces The new research covered in your report (England’s poorest areas face deepest cuts to green space under planning law changes, report finds, 4 June) highlights the stark inequalities that exist across England when it comes to accessing nature-rich places and unlocking the many health, wellbeing and economic benefits that they can provide. In short, the research has found that if you live in the poorest places in England, you are likely to have less or no access to nature. This is set to get worse because of government policy changes. Continue reading...",
+      "whyItMatters": "Surfaced by the daily RSS pipeline from Guardian Cities. Read the original for full context — automated summaries trade depth for reliability.",
+      "topics": [
+        "Urban Design"
+      ]
     }
   ]
 }
