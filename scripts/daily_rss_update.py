@@ -468,6 +468,25 @@ def run_cmd(cmd: list[str], *, check: bool = True) -> subprocess.CompletedProces
     return subprocess.run(cmd, cwd=ROOT, check=check, text=True, capture_output=True)
 
 
+def run_git_retry(cmd: list[str], attempts: int = 4, backoff_sec: int = 4) -> None:
+    """Run a git subcommand with retries. The project lives under
+    ~/Desktop/, which is iCloud-synced; iCloud touching files mid-commit
+    occasionally trips git's index lock with 'Resource deadlock avoided'.
+    A few retries with backoff is usually enough for iCloud to release."""
+    import time
+    for i in range(1, attempts + 1):
+        try:
+            run_cmd(cmd)
+            return
+        except subprocess.CalledProcessError as e:
+            err = (e.stderr or "").strip()
+            transient = "deadlock" in err.lower() or "could not lock" in err.lower() or "index.lock" in err.lower()
+            if i == attempts or not transient:
+                raise
+            log(f"  git {cmd[1] if len(cmd) > 1 else ''} attempt {i}/{attempts} failed ({err[:80]}) — retrying in {backoff_sec}s")
+            time.sleep(backoff_sec)
+
+
 # ----------------------------------------------------------------------------
 # Main
 # ----------------------------------------------------------------------------
@@ -536,17 +555,17 @@ def main() -> int:
         log(f"inline step failed: {e.stderr.strip()[:200]}")
         return 2
 
-    # 5. Commit + push.
+    # 5. Commit + push (with deadlock-tolerant retries; see run_git_retry).
     try:
-        run_cmd(["git", "add", "data.json", "index.html", "archive/"])
+        run_git_retry(["git", "add", "data.json", "index.html", "archive/"])
         status = run_cmd(["git", "status", "--porcelain"], check=False)
         if not status.stdout.strip():
             log("nothing staged — nothing to commit")
             return 0
-        run_cmd(["git", "commit", "-m", f"Add {TODAY_STR} articles (RSS)"])
-        run_cmd(["git", "push", "origin", "main"])
+        run_git_retry(["git", "commit", "-m", f"Add {TODAY_STR} articles (RSS)"])
+        run_git_retry(["git", "push", "origin", "main"])
     except subprocess.CalledProcessError as e:
-        log(f"git step failed: {e.stderr.strip()[:200]}")
+        log(f"git step failed after retries: {e.stderr.strip()[:200]}")
         return 2
 
     # 6. Verify final state for the workflow's success criteria.
