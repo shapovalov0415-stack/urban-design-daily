@@ -64,6 +64,11 @@ MIN_AUSTRALIA = 1
 # keep items, so be lenient.
 FRESHNESS_DAYS = 14
 FEED_TIMEOUT = 15
+# Cap per-source candidates so no single noisy feed (e.g. The Conversation AU
+# which mixes politics/sport/health in with urbanism) drowns out smaller
+# high-signal feeds. With 3 feeds × 7 = ~20 candidates, the selection has
+# enough diversity without overwhelming the urban filter.
+MAX_CANDIDATES_PER_FEED = 7
 
 # Hand-curated set of high-signal RSS feeds. Generic news feeds (SMH, Guardian
 # Australia, ArchDaily) tested poorly — too much politics/sport/single-building
@@ -376,14 +381,25 @@ def select_articles(candidates: list[dict], data: dict) -> list[dict]:
     seen_in_run: set[str] = set()
     cutoff = NOW - _dt.timedelta(days=FRESHNESS_DAYS)
 
+    # Counters so the log reveals WHY items were dropped — diagnoses thin days.
+    rejects = {"dup_existing": 0, "dup_in_run": 0, "not_urban": 0, "too_old": 0}
+
     def relevant(e: dict) -> bool:
         url = (e.get("link") or "").strip()
-        if not url or url.lower() in existing or url.lower() in seen_in_run:
+        if not url:
+            return False
+        if url.lower() in existing:
+            rejects["dup_existing"] += 1
+            return False
+        if url.lower() in seen_in_run:
+            rejects["dup_in_run"] += 1
             return False
         if not is_urban(e.get("title") or "", e.get("trust", "filter")):
+            rejects["not_urban"] += 1
             return False
         pub = e.get("published")
         if pub is not None and pub < cutoff:
+            rejects["too_old"] += 1
             return False
         return True
 
@@ -393,6 +409,14 @@ def select_articles(candidates: list[dict], data: dict) -> list[dict]:
             continue
         seen_in_run.add(e["link"].lower())
         pool.append((score_entry(e), e))
+
+    log(
+        f"  selection pool: {len(pool)} kept / {len(candidates)} total "
+        f"(rejected dup_existing={rejects['dup_existing']} "
+        f"dup_in_run={rejects['dup_in_run']} "
+        f"not_urban={rejects['not_urban']} "
+        f"too_old={rejects['too_old']})"
+    )
 
     pool.sort(key=lambda t: t[0], reverse=True)
 
@@ -511,15 +535,22 @@ def main() -> int:
         log("[skip] already complete")
         return 0
 
-    # 1. Fetch all feeds.
+    # 1. Fetch all feeds. Cap each at MAX_CANDIDATES_PER_FEED (newest first)
+    #    so a noisy feed can't drown out smaller high-signal sources.
     all_entries: list[dict] = []
     for url, source, trust in FEEDS:
         body = fetch_feed(url)
         if body is None:
             continue
         entries = parse_entries(body, source, trust)
-        log(f"  {source} [{trust}]: {len(entries)} entries")
-        all_entries.extend(entries)
+        # Newest-first: sort by published when available, falling back to feed order.
+        entries.sort(
+            key=lambda e: e.get("published") or _dt.datetime.min.replace(tzinfo=_dt.timezone.utc),
+            reverse=True,
+        )
+        capped = entries[:MAX_CANDIDATES_PER_FEED]
+        log(f"  {source} [{trust}]: {len(entries)} entries → top {len(capped)} kept")
+        all_entries.extend(capped)
     if not all_entries:
         log("ERROR: no feed entries fetched")
         return 2
