@@ -142,7 +142,13 @@ NOISE_TITLE = re.compile(
     r"\b(newsroom edition|opinion piece|sport|cricket|footy|afl|nrl|"
     r"recipe|fashion|celebrity|royal family|coronation|murder|"
     r"police charged|election day|by-election|leader's debate|"
-    r"surrendering to|backlash|war room|culture wars)\b",
+    r"surrendering to|backlash|war room|culture wars|"
+    # Lifestyle/letters columns that Guardian and The Conversation mix into
+    # their city/urbanism feeds — 2026-06-20 admitted "The pitfalls of dating
+    # on a school night | Brief letters" before we added these patterns.
+    r"brief letters|brief letter|letters? to the editor|letters? page|"
+    r"dating|relationships?|pet|cat|dog|gardening tips|cooking|"
+    r"weekend reading|reading list|book of the week|trivia|quiz)\b",
     re.IGNORECASE,
 )
 
