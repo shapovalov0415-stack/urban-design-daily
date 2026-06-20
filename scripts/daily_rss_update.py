@@ -60,9 +60,13 @@ UA = (
 
 TARGET_ARTICLES = 3
 MIN_AUSTRALIA = 1
-# Accept items published in the last N days. RSS feeds vary in how long they
-# keep items, so be lenient.
-FRESHNESS_DAYS = 14
+# Accept items published in the last N days. The feeds we use (The Conversation
+# AU, Guardian Cities, Sightline) often retain pieces for several weeks, and
+# 06-19's run rejected 12 of 21 candidates as too-old at 14 days, leaving only
+# 1 fresh-and-novel pick. Dedup against data.json already prevents re-running
+# items we've covered, so the freshness cutoff exists only to avoid surfacing
+# stale news; 30 days is the right size for a daily curator.
+FRESHNESS_DAYS = 30
 FEED_TIMEOUT = 15
 # Cap per-source candidates so no single noisy feed (e.g. The Conversation AU
 # which mixes politics/sport/health in with urbanism) drowns out smaller
