@@ -148,7 +148,18 @@ NOISE_TITLE = re.compile(
     # on a school night | Brief letters" before we added these patterns.
     r"brief letters|brief letter|letters? to the editor|letters? page|"
     r"dating|relationships?|pet|cat|dog|gardening tips|cooking|"
-    r"weekend reading|reading list|book of the week|trivia|quiz)\b",
+    r"weekend reading|reading list|book of the week|trivia|quiz|"
+    # Election / voting / political-process content — Sightline Institute in
+    # particular publishes a steady stream of Cascadia electoral policy that
+    # is "trusted" content but not urbanism. 2026-06-22 surfaced two of these
+    # in a row (Voting by Mail, Montana Primary 'Drop-and-Swap') before this
+    # was added. Generic 'election' alone is too broad (planning elections,
+    # design awards are 'elections') so keep this scoped to ballot mechanics.
+    r"voting by mail|vote by mail|mail-in vot|ballot|primary election|"
+    r"redistrict|gerrymander|voter id|voter registration|electoral college|"
+    r"drop-and-swap|elections? loophole|primary loophole|"
+    # Stock-market and corporate-finance noise
+    r"stock market|earnings call|quarterly results|share price|bond yield)\b",
     re.IGNORECASE,
 )
 
