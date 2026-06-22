@@ -118,6 +118,25 @@ URBAN_STRONG = re.compile(
     re.IGNORECASE,
 )
 
+# READER PREFERENCE: this reader's interests cluster around the "soft city"
+# discipline — Jan Gehl / David Sim human-scale urbanism, Jeff Speck-style
+# walkability, landscape urbanism (parks/green infrastructure/streetscape),
+# and the public-space side of urban design. Articles hitting these terms
+# get a strong scoring boost above the general URBAN_STRONG signal. See
+# scripts/canonical_prompt.md for the full reader profile.
+SOFT_CITY = re.compile(
+    r"\b(soft city|human scale|human-scale|jan gehl|david sim|"
+    r"walkable|walkability|walkable city|jeff speck|"
+    r"15-minute|15 minute|fifteen-minute|pedestrian-first|pedestrian first|"
+    r"placemaking|public space|public realm|public square|plaza|laneway|"
+    r"streetscape|street tree|tree canopy|shared street|woonerf|"
+    r"landscape architect|landscape urbanism|urban ecology|"
+    r"green infrastructure|green corridor|green street|park|parks|"
+    r"play street|complete street|liveability|liveable city|livable city|"
+    r"third place|active frontage|mixed-use mid-rise|gentle density)\b",
+    re.IGNORECASE,
+)
+
 # Weaker urban tokens — at least 2 must appear in title for an entry to
 # qualify via this path. Keeps single buzzword matches from slipping through.
 URBAN_WEAK = re.compile(
@@ -370,8 +389,9 @@ def truncate_summary(text: str, max_chars: int = 1200) -> str:
 
 
 def score_entry(e: dict) -> float:
-    """Higher is better. Combines urbanism strength, AU bonus, recency, and
-    trust. Used to rank candidates after the binary urbanism filter."""
+    """Higher is better. Combines urbanism strength, reader's soft-city/
+    walkable/landscape preference, AU bonus, recency, and trust. Used to
+    rank candidates after the binary urbanism filter."""
     title = e.get("title", "") or ""
     summary = (e.get("summary", "") or "")[:600]  # cap so long summaries don't dominate
     score = 0.0
@@ -381,6 +401,12 @@ def score_entry(e: dict) -> float:
         score += 3
     score += 2.0 * len(URBAN_WEAK.findall(title))
     score += 0.5 * len(URBAN_WEAK.findall(summary))
+    # READER PREFERENCE: heavy boost for soft city / walkable / landscape /
+    # urban-design content. This dominates the ranking when present.
+    if SOFT_CITY.search(title):
+        score += 12
+    if SOFT_CITY.search(summary):
+        score += 5
     if AU_REGEX.search(title):
         score += 6
     elif AU_REGEX.search(summary):
@@ -448,16 +474,37 @@ def select_articles(candidates: list[dict], data: dict) -> list[dict]:
         body = (e.get("title") or "") + " " + (e.get("summary") or "")
         return is_australia(body)
 
-    # First, take the top-scoring AU entry if one exists in the pool.
+    # READER PREFERENCE — target composition is exactly 1 AU + 2 non-AU
+    # (see scripts/canonical_prompt.md). Take the top-scoring AU first,
+    # then fill the remaining slots with the top-scoring non-AU. Only fall
+    # back to extra AU picks if non-AU candidates are exhausted (e.g. an
+    # AU-heavy news day).
+    target_au = MIN_AUSTRALIA  # 1
+    target_total = TARGET_ARTICLES  # 3
+
+    # Step 1: take top AU entries up to target_au.
     for _, e in pool:
+        if len(picked) >= target_au:
+            break
         if is_au_entry(e):
             picked.append(e)
             picked_urls.add(e["link"].lower())
-            break
 
-    # Fill the rest by score, skipping already-picked URLs.
+    # Step 2: fill the remaining slots with NON-AU entries only.
     for _, e in pool:
-        if len(picked) >= TARGET_ARTICLES:
+        if len(picked) >= target_total:
+            break
+        if e["link"].lower() in picked_urls:
+            continue
+        if is_au_entry(e):
+            continue  # save AU candidates for the final fallback
+        picked.append(e)
+        picked_urls.add(e["link"].lower())
+
+    # Step 3: fallback — if non-AU candidates are exhausted, top up with
+    # additional AU entries rather than ship < 3.
+    for _, e in pool:
+        if len(picked) >= target_total:
             break
         if e["link"].lower() in picked_urls:
             continue
