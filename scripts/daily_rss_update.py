@@ -623,22 +623,86 @@ def main() -> int:
         log("ERROR: no feed entries fetched")
         return 2
 
-    # 2. Select.
-    picks = select_articles(all_entries, data)
-    if not picks:
-        log("ERROR: no relevant fresh candidates")
-        return 2
-
-    # 3. Append.
+    # 2. Select. Two paths:
+    #    (a) LLM-based (Opus 4.8 + ultrathink via `claude -p`, $0 within
+    #        Claude subscription) — picks 3 AND writes the 220-280w summary
+    #        + 35-65w whyItMatters per scripts/canonical_prompt.md.
+    #    (b) Heuristic fallback — the previous score-and-pick path, with
+    #        RSS description directly as summary + boilerplate why.
+    #    Default = LLM. Set LLM_CURATION=0 in the environment to force
+    #    heuristic for testing.
+    use_llm = os.environ.get("LLM_CURATION", "1") not in ("0", "false", "False", "")
     seq = next_id_seq(data)
     appended: list[dict] = []
-    for entry in picks:
-        article = to_article(entry, seq)
-        data["articles"].append(article)
-        appended.append(article)
-        seq += 1
-        log(f"  + {article['id']}  AU={is_australia(article['title']+article['summary'])}  "
-            f"{article['title'][:70]}")
+
+    if use_llm:
+        try:
+            from curate_with_opus import curate as llm_curate
+            # Heuristic pool first (relevance filter + score), then send top
+            # N to the LLM for final selection.
+            scored = sorted(
+                [
+                    (score_entry(e), e)
+                    for e in all_entries
+                    if is_urban(e.get("title") or "", e.get("trust", "filter"))
+                ],
+                key=lambda t: t[0], reverse=True,
+            )
+            existing_set = {a.get("url", "").lower() for a in data.get("articles", []) if a.get("url")}
+            cutoff = NOW - _dt.timedelta(days=FRESHNESS_DAYS)
+            pool_for_llm: list[dict] = []
+            for _, e in scored:
+                url = (e.get("link") or "").lower()
+                if not url or url in existing_set:
+                    continue
+                pub = e.get("published")
+                if pub is not None and pub < cutoff:
+                    continue
+                pool_for_llm.append(e)
+                if len(pool_for_llm) >= 16:
+                    break
+            log(f"  LLM curation: sending {len(pool_for_llm)} candidates to Opus 4.8 (ultrathink)")
+            existing_urls_list = [a["url"] for a in data["articles"] if a.get("url")]
+            llm_picks = llm_curate(pool_for_llm, TODAY_STR, existing_urls_list)
+            placeholder = "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800"
+            for p in llm_picks:
+                url = (p.get("url") or "").strip()
+                if not url or url.lower() in existing_set:
+                    continue
+                existing_set.add(url.lower())
+                article = {
+                    "id": f"{TODAY_STR}-{seq:03d}",
+                    "date": TODAY_STR,
+                    "title": (p.get("title") or "").strip(),
+                    "source": (p.get("source") or "").strip(),
+                    "url": url,
+                    "thumbnail": placeholder,
+                    "summary": (p.get("summary") or "").strip(),
+                    "whyItMatters": (p.get("whyItMatters") or "").strip(),
+                    "topics": list(p.get("topics") or []),
+                }
+                data["articles"].append(article)
+                appended.append(article)
+                seq += 1
+                log(f"  + {article['id']}  AU={is_australia(article['title']+article['summary'])}  "
+                    f"{article['title'][:70]} (summary={len(article['summary'].split())}w)")
+        except Exception as e:
+            log(f"  LLM curation failed: {type(e).__name__}: {str(e)[:200]} — falling back to heuristic")
+            appended = []  # ensure clean state
+
+    if not appended:
+        # Heuristic fallback path.
+        picks = select_articles(all_entries, data)
+        if not picks:
+            log("ERROR: no relevant fresh candidates")
+            return 2
+        for entry in picks:
+            article = to_article(entry, seq)
+            data["articles"].append(article)
+            appended.append(article)
+            seq += 1
+            log(f"  + {article['id']}  AU={is_australia(article['title']+article['summary'])}  "
+                f"{article['title'][:70]}")
 
     DATA_PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False))
     write_archive(appended)
