@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import os
 import re
 import socket
 import subprocess
@@ -68,20 +69,39 @@ MIN_AUSTRALIA = 1
 # stale news; 30 days is the right size for a daily curator.
 FRESHNESS_DAYS = 30
 FEED_TIMEOUT = 15
-# Cap per-source candidates so no single noisy feed (e.g. The Conversation AU
-# which mixes politics/sport/health in with urbanism) drowns out smaller
-# high-signal feeds. With 3 feeds × 7 = ~20 candidates, the selection has
-# enough diversity without overwhelming the urban filter.
-MAX_CANDIDATES_PER_FEED = 7
+# Cap per-source candidates so no single noisy feed drowns out smaller
+# high-signal feeds. With ~18 feeds × 5 = up to 90 candidates, the urban
+# filter has room to drop noise and still leave the LLM curation step ~16
+# substantive picks to choose from.
+MAX_CANDIDATES_PER_FEED = 5
 
 # Hand-curated set of high-signal RSS feeds. Generic news feeds (SMH, Guardian
 # Australia, ArchDaily) tested poorly — too much politics/sport/single-building
 # content, not enough true urbanism in titles to make automated selection
 # reliable. Stick to feeds whose entire editorial focus is cities and planning.
 FEEDS = [
+    # AU-focused (highest signal for the reader's geography)
     ("https://theconversation.com/au/cities/articles.atom", "The Conversation AU", "trusted"),
+    ("https://architectureau.com/rss", "ArchitectureAU", "trusted"),
+    ("https://thefifthestate.com.au/feed/", "The Fifth Estate", "trusted"),
+    # International — explicitly urban / cities focused
     ("https://www.theguardian.com/cities/rss", "Guardian Cities", "trusted"),
     ("https://www.sightline.org/feed/", "Sightline Institute", "trusted"),
+    ("https://www.strongtowns.org/journal?format=rss", "Strong Towns", "trusted"),
+    ("https://www.streetsblog.org/feed/", "Streetsblog", "trusted"),
+    ("https://www.itdp.org/feed", "ITDP", "trusted"),
+    ("https://citymonitor.ai/feed", "City Monitor", "trusted"),
+    ("https://commonedge.org/feed/", "Common Edge", "trusted"),
+    ("https://www.archdaily.com/section/cities/feed", "ArchDaily Cities", "trusted"),
+    ("https://www.smartcitiesdive.com/feeds/news/", "Smart Cities Dive", "filter"),
+    # Broader architecture / design — gated to "filter" because they mix in
+    # single-building object content (URBAN_STRONG required for inclusion)
+    ("https://www.archdaily.com/feed", "ArchDaily", "filter"),
+    ("https://www.archpaper.com/feed/", "Architects Newspaper", "filter"),
+    ("https://www.dezeen.com/feed/", "Dezeen", "filter"),
+    ("https://www.curbed.com/rss/index.xml", "Curbed", "filter"),
+    # NZ neighbour — sometimes has soft-city / walkable content relevant to AU
+    ("https://www.thespinoff.co.nz/feed", "The Spinoff", "filter"),
 ]
 
 AU_TAG_CITIES = [
