@@ -215,9 +215,39 @@ Return STRICT JSON only, no surrounding prose, no markdown fence:
 # Opus invocation
 # ----------------------------------------------------------------------------
 
+def _claude_preflight() -> bool:
+    """5-token sanity probe. Cheap. If it fails, the main call almost
+    certainly will too and we don't want to burn rate-window seconds on it."""
+    try:
+        proc = subprocess.run(
+            ["claude", "-p", "--model", "opus", "--no-session-persistence", "Say ok"],
+            input="",
+            text=True,
+            capture_output=True,
+            timeout=30,
+        )
+        if proc.returncode != 0:
+            log(f"  preflight FAIL exit={proc.returncode} stderr={proc.stderr.strip()[:200]!r}")
+            return False
+        log(f"  preflight ok")
+        return True
+    except Exception as e:
+        log(f"  preflight EXC {type(e).__name__}: {str(e)[:120]}")
+        return False
+
+
 def invoke_opus(prompt: str, timeout: int = 600) -> str:
     """Run `claude -p --model opus` with the prompt on stdin. Returns the
-    model's response text."""
+    model's response text.
+
+    Day 1 (2026-06-23) failed with exit 1 + empty stderr. Reproducing the same
+    56k prompt the next day succeeded with the same exit 0 — so the failure
+    was almost certainly transient (subscription rate window at 06:12 AEST peak
+    hour, or a network blip). Two defensive changes:
+      1. ALWAYS log full stderr (truncated to 500 chars) on every failure so
+         we never again debug an empty-stderr exit code.
+      2. ONE retry with 30s sleep on non-zero exit. Throttle windows clear in
+         under a minute 95% of the time."""
     cmd = [
         "claude", "-p",
         "--model", "opus",
@@ -225,18 +255,32 @@ def invoke_opus(prompt: str, timeout: int = 600) -> str:
         "--output-format", "text",
     ]
     log(f"  invoking: {' '.join(cmd)} (prompt {len(prompt)} chars)")
-    proc = subprocess.run(
-        cmd,
-        input=prompt,
-        text=True,
-        capture_output=True,
-        timeout=timeout,
-    )
-    if proc.returncode != 0:
-        raise RuntimeError(
-            f"claude -p exit {proc.returncode}: stderr={proc.stderr.strip()[:300]}"
+
+    last_err: str = ""
+    for attempt in (1, 2):
+        proc = subprocess.run(
+            cmd,
+            input=prompt,
+            text=True,
+            capture_output=True,
+            timeout=timeout,
         )
-    return proc.stdout.strip()
+        # Always log usage / stderr so the diagnosis is in the log next time.
+        stderr_tail = (proc.stderr or "").strip()
+        if stderr_tail:
+            log(f"  attempt {attempt} stderr: {stderr_tail[:500]!r}")
+        if proc.returncode == 0:
+            return proc.stdout.strip()
+        last_err = (
+            f"exit={proc.returncode} stderr={stderr_tail[:300]!r} "
+            f"stdout_head={proc.stdout.strip()[:200]!r}"
+        )
+        log(f"  attempt {attempt} FAIL: {last_err}")
+        if attempt == 1:
+            log(f"  sleeping 30s then retrying once…")
+            import time
+            time.sleep(30)
+    raise RuntimeError(f"claude -p failed after 2 attempts: {last_err}")
 
 
 def extract_json(text: str) -> dict:
@@ -263,6 +307,9 @@ def extract_json(text: str) -> dict:
 def curate(candidates: list[dict], today_str: str, existing_urls: list[str]) -> list[dict]:
     """Curate using Opus 4.8 + ultrathink. Returns 3 article dicts ready to
     drop into data.json (without id/date/thumbnail — caller assigns)."""
+    # Preflight: cheap 5-token call. If it fails, body fetch is wasted work.
+    if not _claude_preflight():
+        raise RuntimeError("claude -p preflight failed; LLM curation aborted")
     # Fetch bodies for top N (cap to keep prompt size reasonable).
     BODY_FETCH_LIMIT = 10
     enriched: list[dict] = []
