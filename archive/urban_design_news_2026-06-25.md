@@ -1,0 +1,37 @@
+# Urban Design News — 2026-06-25
+
+## Paris as a Living Laboratory: Proximity, Inclusion, and the School as Climate and Social Infrastructure
+
+**Source:** ArchDaily  
+**URL:** https://www.archdaily.com/1042276/paris-as-a-living-laboratory-proximity-inclusion-and-the-school-as-climate-and-social-infrastructure  
+**Topics:** France, 15-Minute City, Nature-Based Solutions, Public Realm, Urban Regeneration
+
+Paris features as the opening case study in the ReGreeneration project, a Horizon Europe-funded initiative working across nine cities to advance urban regeneration through nature-based solutions, participatory governance, and integrated approaches to climate resilience and social equity. Despite being one of the densest and most walkable cities in Europe, served by an expansive metro system, Paris spent decades organised largely around private vehicles. The consequences have included chronic air pollution, streets inhospitable to pedestrians and cyclists, and a public realm that prioritised vehicle movement over the quality of life of residents. The article examines how the city's green space allocation falls well below European benchmarks, while the urban heat island effect intensifies with each passing summer. A persistent spatial inequality between the inner arrondissements and the peripheral banlieues defines metropolitan life. The ReGreeneration framework positions schools as dual-purpose climate and social infrastructure, embedding them within a broader vision of proximity-based planning aligned with the 15-minute city model that Paris has championed under recent administrations. Each of the nine cities in the project portfolio brings distinct challenges and planning traditions, forming what researchers describe as a living laboratory for rethinking sustainable urban transformation in practice. The series explores what each city contributes and what the broader design community can learn. For Paris, the focus falls on how nature-based solutions, inclusive public space design, and neighbourhood-scale service delivery can address both environmental performance and social equity within a dense European capital that is simultaneously historic and rapidly evolving.
+
+**Why it matters:** Reframing schools as climate and social infrastructure within a 15-minute city framework demonstrates how proximity-based planning can simultaneously address heat resilience, green space deficits, and spatial inequality. Australian cities pursuing 20-minute neighbourhood policies can draw directly on Paris's integration of nature-based solutions into existing dense urban fabric.
+
+---
+
+## We Should Be Sleeping in More Garages
+
+**Source:** Strong Towns  
+**URL:** https://www.strongtowns.org/journal/2026-6-24-we-should-be-sleeping-in-more-garages  
+**Topics:** United States, Accessory Dwelling Units, Incremental Development, Gentle Densification, Housing Supply
+
+Strong Towns contributor Abby Newsham recounts staying in two accessory dwelling units converted from detached garages during work trips to Northwest Arkansas. Both units sat behind existing houses and were accessed from rear alleys, each roughly the size of a hotel room. What struck Newsham most was the sense of privacy the arrangement afforded. Arriving via the alley, walking through a backyard, and entering through a small door created a sense of separation that belied the proximity to the primary dwelling. The experience prompted broader reflection on the untapped potential of garage conversions as an incremental approach to expanding housing supply. Across much of North America, detached garages occupy substantial footprints on residential lots yet serve primarily as vehicle storage or overflow space. Converting them to small dwellings requires relatively modest construction compared with new builds, reuses existing foundations and structures, and adds housing without altering the streetscape or neighbourhood character visible from the front. Newsham, who grew up in a suburb of St. Louis with a large three-car garage, notes the contrast between the space typically devoted to cars and the scale of housing that same footprint could accommodate. The piece frames accessory dwelling units not as a policy abstraction but as a lived experience, arguing that the comfort and delight of actually occupying these small units makes the strongest case for their wider adoption. Alley-accessed garage conversions offer a model of gentle densification that adds residents without disrupting the existing pattern of a neighbourhood.
+
+**Why it matters:** Garage-to-dwelling conversions exemplify the incremental, human-scale densification that soft city advocates champion, adding housing within existing lot patterns without requiring rezoning or new infrastructure. As Australian states expand granny flat and secondary dwelling provisions, the alley-accessed model offers a practical template for gentle infill in established suburban areas.
+
+---
+
+## 'Green' home features can earn developers 18 per cent more, then save homeowners money in the long term: new study
+
+**Source:** The Fifth Estate  
+**URL:** https://thefifthestate.com.au/the-conversation/green-home-features-can-earn-developers-18-per-cent-more-then-save-homeowners-money-in-the-long-term-new-study/  
+**Topics:** Australia, Sustainable Housing, Housing Supply, Building Performance
+
+A new study examined in The Fifth Estate challenges the long-held assumption among Australian builders and developers that sustainable home features are too costly to include in new construction. For years, components such as solar panels, batteries, double-glazed windows, proper insulation, effective ventilation, and higher-quality materials were routinely omitted from new homes on the grounds that they were too expensive, too niche, or insufficiently profitable. The result has been predictable: homeowners move in, face high energy bills and uncomfortable indoor temperatures, and eventually pay to retrofit the same features the builder chose to skip, typically at considerably greater cost than inclusion during the original construction. The research findings indicate that homes incorporating green features can command an 18 per cent price premium for developers at the point of sale, while delivering ongoing savings to homeowners through reduced energy costs over the life of the dwelling. The study effectively dismantles the business case against sustainable construction by demonstrating that the market already rewards it. Developers are not sacrificing margin by building to higher environmental standards; they are leaving money on the table by failing to do so. The implications extend beyond individual dwellings to the broader pattern of housing delivery across Australia. When the default approach produces homes that require expensive retrofitting within years of completion, it represents a systemic failure in how the construction industry responds to both consumer expectations and climate performance requirements. The study positions sustainable design not as an aspirational add-on but as a financially rational baseline for residential construction.
+
+**Why it matters:** An 18 per cent price premium for green-featured homes demonstrates that the Australian market already values sustainable construction, undermining the industry's long-standing cost objection. The finding strengthens the case for state governments to lift minimum energy performance standards in residential building codes without fearing developer resistance.
+
+---
