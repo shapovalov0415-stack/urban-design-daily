@@ -3126,42 +3126,37 @@
   }
 
   async function startCloudSync(user) {
-    // Called when the user signs in. Reads the remote doc, merges with
-    // local, then subscribes to live updates.
+    // Called when the user signs in. STRICTLY REPLACE local state with this
+    // account's Firestore doc — no merge from anonymous localStorage. This
+    // enforces per-account isolation: signing in shows ONLY what that
+    // account has saved, never bleeds anonymous browser state into the
+    // account, and switching accounts on the same browser shows the right
+    // per-account list.
+    //
+    // The previous implementation merged local ∪ remote and pushed the
+    // union back up, which silently dumped the anonymous browser's saves
+    // into whichever account the user happened to sign in with.
     const ref = db.collection(FS_COLLECTION).doc(user.uid);
-    let remote = null;
+    let remoteSaved = {};
     try {
       const snap = await ref.get();
-      if (snap.exists) remote = snap.data();
-    } catch(e) { /* network — fall back to local-only until reconnect */ }
+      if (snap.exists && snap.data() && snap.data().saved) {
+        remoteSaved = snap.data().saved;
+      }
+    } catch(e) { /* network — fall back to empty until reconnect */ }
 
-    const remoteSaved = (remote && remote.saved) || {};
-    const localSaved = state.saved || {};
-    // Merge: union of keys. Remote keys win on conflict (treats remote as the
-    // cross-device source of truth, but never deletes local-only saves).
-    const merged = { ...localSaved, ...remoteSaved };
-    const localOnly = Object.keys(localSaved).filter(k => !(k in remoteSaved));
-    state.saved = merged;
+    state.saved = remoteSaved;
     persistSaved();
     renderFeed();
     renderSavedBadge();
-    // If local introduced new entries (or remote was empty), push the union up.
-    if (localOnly.length > 0 || !remote) {
-      try {
-        await ref.set({
-          saved: state.saved,
-          updated_at: firebase.firestore.FieldValue.serverTimestamp(),
-        }, { merge: true });
-      } catch(e) {}
-    }
-    // Real-time updates from other devices.
+
+    // Real-time updates from other devices on the same account.
     if (_unsubSaved) _unsubSaved();
     _unsubSaved = ref.onSnapshot((snap) => {
       if (!snap.exists) return;
       const data = snap.data();
       if (!data || !data.saved) return;
       const incoming = data.saved;
-      // Apply if it differs from what we have locally.
       const same =
         Object.keys(incoming).length === Object.keys(state.saved).length &&
         Object.keys(incoming).every(k => state.saved[k] === incoming[k]);
@@ -3193,7 +3188,15 @@
   async function signOutNow() {
     stopCloudSync();
     try { await auth.signOut(); } catch(e) {}
-    // localStorage saves are preserved — they remain the anonymous local cache.
+    // CLEAR local saves on sign-out so the browser doesn't leak this
+    // account's saved list to anonymous viewers or to the next account that
+    // signs in on the same browser. Per-account isolation requires that
+    // anonymous = empty.
+    state.saved = {};
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    try { localStorage.removeItem(OLD_KEY); } catch(e) {}
+    renderFeed();
+    renderSavedBadge();
   }
 
   function renderAuthUI() {
