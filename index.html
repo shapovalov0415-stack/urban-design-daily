@@ -544,7 +544,34 @@
     .detail-title { font-size: 22px; }
     .sheet-options { grid-template-columns: 1fr; }
   }
+
+  /* Sign-in UI (top-right of header) */
+  .auth { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .auth-btn { background: #fff; border: 1px solid #d6d6d6; border-radius: 999px; padding: 6px 14px; cursor: pointer; font-size: 12.5px; color: #333; font-weight: 500; line-height: 1.4; }
+  .auth-btn:hover { background: #f5f5f5; border-color: #bdbdbd; }
+  .auth-btn:active { background: #ececec; }
+  .auth-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+  .auth-name { color: #555; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media (max-width: 540px) { .auth-name { display: none; } }
 </style>
+
+<!-- Firebase SDK (compat build, loaded via CDN — no bundler needed). Shared
+     with the highlighter-3767e Firebase project; the urban-design-daily app
+     is isolated by Firestore collection name (`urban_saved/{uid}`) +
+     security rule, so it cannot read or write to other apps' collections. -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyDG-0E-dqSNnpOZTnvOO7m8EJ6Yk_JDKjg",
+    authDomain: "highlighter-3767e.firebaseapp.com",
+    projectId: "highlighter-3767e",
+    storageBucket: "highlighter-3767e.firebasestorage.app",
+    messagingSenderId: "816288975011",
+    appId: "1:816288975011:web:42eba1ed3e2e898db05716",
+  });
+</script>
 </head>
 <body>
 
@@ -555,6 +582,7 @@
       <button class="tab is-active" data-tab="all">All</button>
       <button class="tab" data-tab="saved">Saved<span class="badge" id="saved-badge"></span></button>
     </nav>
+    <div class="auth" id="auth-ui"><!-- populated by renderAuthUI() once Firebase auth state resolves --></div>
   </div>
 </header>
 
@@ -3008,14 +3036,18 @@
   // ========== CONSTANTS ==========
   const STORAGE_KEY = 'udd_saved_v2';      // { [articleId]: categoryId }
   const OLD_KEY     = 'udd_liked_v1';      // legacy: [articleId, ...]
-  const TS_KEY      = 'udd_local_ts';      // last-known updatedAt we synced
 
-  // Cloud sync (JSONBin.io) — personal bin, Access Key scoped to read/update only
-  const SYNC = {
-    binId:    '69e57c1faaba882197188ff4',
-    readKey:  '$2a$10$TEL1UHkdrjCOklCUHRt5L.tlwcehOhiIIm7d1Eri0Thpcn2VixGRK',
-    apiBase:  'https://api.jsonbin.io/v3',
-  };
+  // Cloud sync moved from JSONBin (single shared bin = no per-user privacy)
+  // to Firebase Firestore (per-user document keyed by auth uid). See
+  // signIn() / signOut() / startCloudSync() below. Anonymous visitors keep
+  // a local-only save list; signing in syncs across the user's devices.
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+  // Firestore collection name is namespaced so the urban-design-daily app
+  // shares the Firebase project with Highlighter without colliding on data
+  // or auth scopes.
+  const FS_COLLECTION = 'urban_saved';
 
   const CATEGORIES = [
     { id: 'melbourne', label: 'Melbourne', color: '#e85d75' },
@@ -3030,12 +3062,15 @@
   // ========== STATE ==========
   const state = {
     articles: [],
-    saved: {},             // { articleId: categoryId }
+    saved: {},             // { articleId: categoryId } — local cache (instant UI)
     tab: 'all',            // 'all' | 'saved'
     savedFilter: 'all',    // 'all' | categoryId
     openId: null,          // article id open in detail modal
     sheetId: null,         // article id whose save-sheet is open
+    user: null,            // Firebase user object (null = anonymous, save = local-only)
   };
+  let _unsubSaved = null;  // unsubscribe handle for the Firestore onSnapshot
+  let _pushTimer = null;   // debounce timer for pushing local changes up
 
   // ========== STORAGE ==========
   function loadSaved() {
@@ -3063,68 +3098,132 @@
   function setCat(id, cat) { state.saved[id] = cat; persistSaved(); schedulePush(); }
   function removeSave(id) { delete state.saved[id]; persistSaved(); schedulePush(); }
 
-  // ========== CLOUD SYNC (JSONBin.io) ==========
-  // Strategy: last-write-wins at object level, by ISO updatedAt string.
-  // - On page load: fetch remote. If remote is newer than what we last saw locally, replace local with remote. Otherwise push local up.
-  // - On save/unsave: update local immediately (fast UI), debounced push to remote.
+  // ========== CLOUD SYNC (Firebase Firestore, per-user) ==========
+  // Anonymous users keep a local-only saved list (in `state.saved` + localStorage).
+  // Signed-in users get cross-device sync via Firestore at urban_saved/{uid}.
+  // - On sign-in: read remote doc, merge with local (union; remote keys win
+  //   on conflict so the most recent cross-device write is preferred), push
+  //   the union back so all devices converge.
+  // - While signed in: every save/unsave fires a debounced push, and a
+  //   real-time onSnapshot listener applies remote changes from other devices.
+  // - On sign-out: stop syncing; localStorage retains whatever was last set.
 
-  async function fetchRemote() {
-    try {
-      const res = await fetch(`${SYNC.apiBase}/b/${SYNC.binId}/latest`, {
-        headers: { 'X-Access-Key': SYNC.readKey }
-      });
-      if (!res.ok) return null;
-      const body = await res.json();
-      return body.record || null;
-    } catch(e) { return null; }
+  function isSignedIn() { return !!state.user; }
+
+  function schedulePush() {
+    clearTimeout(_pushTimer);
+    _pushTimer = setTimeout(pushRemote, 700);
   }
 
   async function pushRemote() {
-    const now = new Date().toISOString();
+    if (!isSignedIn()) return;
     try {
-      const res = await fetch(`${SYNC.apiBase}/b/${SYNC.binId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Access-Key': SYNC.readKey
-        },
-        body: JSON.stringify({ saved: state.saved, updatedAt: now })
-      });
-      if (res.ok) {
-        try { localStorage.setItem(TS_KEY, now); } catch(e) {}
-      }
-    } catch(e) { /* offline */ }
+      await db.collection(FS_COLLECTION).doc(state.user.uid).set({
+        saved: state.saved,
+        updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
+    } catch(e) { /* offline or rules denied — local cache still good */ }
   }
 
-  let pushTimer = null;
-  function schedulePush() {
-    clearTimeout(pushTimer);
-    pushTimer = setTimeout(pushRemote, 700);
-  }
+  async function startCloudSync(user) {
+    // Called when the user signs in. Reads the remote doc, merges with
+    // local, then subscribes to live updates.
+    const ref = db.collection(FS_COLLECTION).doc(user.uid);
+    let remote = null;
+    try {
+      const snap = await ref.get();
+      if (snap.exists) remote = snap.data();
+    } catch(e) { /* network — fall back to local-only until reconnect */ }
 
-  async function syncInitial() {
-    const remote = await fetchRemote();
-    if (!remote || !remote.saved) {
-      // Remote empty/new — push our local state up to initialize
-      if (Object.keys(state.saved).length > 0) pushRemote();
-      return;
+    const remoteSaved = (remote && remote.saved) || {};
+    const localSaved = state.saved || {};
+    // Merge: union of keys. Remote keys win on conflict (treats remote as the
+    // cross-device source of truth, but never deletes local-only saves).
+    const merged = { ...localSaved, ...remoteSaved };
+    const localOnly = Object.keys(localSaved).filter(k => !(k in remoteSaved));
+    state.saved = merged;
+    persistSaved();
+    renderFeed();
+    renderSavedBadge();
+    // If local introduced new entries (or remote was empty), push the union up.
+    if (localOnly.length > 0 || !remote) {
+      try {
+        await ref.set({
+          saved: state.saved,
+          updated_at: firebase.firestore.FieldValue.serverTimestamp(),
+        }, { merge: true });
+      } catch(e) {}
     }
-    const localTs = (function(){ try { return localStorage.getItem(TS_KEY) || ''; } catch(e){ return ''; } })();
-    const remoteTs = remote.updatedAt || '';
-    // ISO 8601 strings compare lexicographically = chronologically
-    if (remoteTs && remoteTs > localTs) {
-      // Remote newer: overwrite local
-      state.saved = remote.saved || {};
+    // Real-time updates from other devices.
+    if (_unsubSaved) _unsubSaved();
+    _unsubSaved = ref.onSnapshot((snap) => {
+      if (!snap.exists) return;
+      const data = snap.data();
+      if (!data || !data.saved) return;
+      const incoming = data.saved;
+      // Apply if it differs from what we have locally.
+      const same =
+        Object.keys(incoming).length === Object.keys(state.saved).length &&
+        Object.keys(incoming).every(k => state.saved[k] === incoming[k]);
+      if (same) return;
+      state.saved = incoming;
       persistSaved();
-      try { localStorage.setItem(TS_KEY, remoteTs); } catch(e) {}
       renderFeed();
       renderSavedBadge();
-    } else if (localTs && localTs > remoteTs) {
-      // Local newer: push up
-      pushRemote();
-    }
-    // else: equal or both empty — nothing to do
+    });
   }
+
+  function stopCloudSync() {
+    if (_unsubSaved) { _unsubSaved(); _unsubSaved = null; }
+  }
+
+  // ========== AUTH ==========
+  async function signIn() {
+    try {
+      await auth.signInWithPopup(googleProvider);
+    } catch(e) {
+      // Common: user closed popup. No-op.
+      if (e && e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+        console.warn('signIn failed:', e.code || e.message);
+        alert('Sign-in failed: ' + (e.message || e));
+      }
+    }
+  }
+
+  async function signOutNow() {
+    stopCloudSync();
+    try { await auth.signOut(); } catch(e) {}
+    // localStorage saves are preserved — they remain the anonymous local cache.
+  }
+
+  function renderAuthUI() {
+    const el = document.getElementById('auth-ui');
+    if (!el) return;
+    if (state.user) {
+      const u = state.user;
+      const avatar = u.photoURL
+        ? `<img class="auth-avatar" src="${escapeHtml(u.photoURL)}" alt="" referrerpolicy="no-referrer">`
+        : '';
+      const name = escapeHtml(u.displayName || u.email || 'signed in');
+      el.innerHTML = `${avatar}<span class="auth-name">${name}</span><button class="auth-btn" id="auth-out">Sign out</button>`;
+      const btn = document.getElementById('auth-out');
+      if (btn) btn.onclick = signOutNow;
+    } else {
+      el.innerHTML = `<button class="auth-btn" id="auth-in">Sign in</button>`;
+      const btn = document.getElementById('auth-in');
+      if (btn) btn.onclick = signIn;
+    }
+  }
+
+  auth.onAuthStateChanged((user) => {
+    state.user = user || null;
+    renderAuthUI();
+    if (user) {
+      startCloudSync(user);
+    } else {
+      stopCloudSync();
+    }
+  });
 
   // ========== UTIL ==========
   function escapeHtml(s) {
@@ -3460,6 +3559,7 @@
   // ========== INIT ==========
   async function init() {
     loadSaved();
+    renderAuthUI();  // initial paint before auth state resolves (shows "Sign in")
     bind();
     let data = null;
     try {
@@ -3480,12 +3580,8 @@
     if (hashId && state.articles.find(a => a.id === hashId)) {
       openDetail(hashId, { fromHash: true });
     }
-    // Sync saved state from cloud (non-blocking)
-    syncInitial();
-    // Re-sync when tab becomes visible again (catches changes from other devices)
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) syncInitial();
-    });
+    // Cloud sync is owned by onAuthStateChanged (above) — it fires on initial
+    // load with either a cached user (auto-resync) or null (anonymous mode).
   }
   init();
 })();
