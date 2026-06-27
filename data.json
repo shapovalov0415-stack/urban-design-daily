@@ -2450,6 +2450,57 @@
         "Public Realm",
         "Climate Adaptation"
       ]
+    },
+    {
+      "id": "2026-06-28-001",
+      "date": "2026-06-28",
+      "title": "Building Public Life: How Bogotá and Mexico City Addressed Urban Inequality",
+      "source": "ArchDaily",
+      "url": "https://www.archdaily.com/1042536/building-public-life-how-bogota-and-mexico-city-addressed-urban-inequality",
+      "thumbnail": "https://images.adsttc.com/media/images/6a32/cccc/6c38/4852/67fe/31cf/large_jpg/building-public-life-architectural-responses-to-urban-inequality-in-colombia-and-mexico_3.jpg?1781714132",
+      "summary": "Peripheral neighbourhoods in Latin American cities have historically had limited access to the resources that support urban life beyond basic survival. While gaps in housing, transport and public services are well documented, ArchDaily examines a less visible deficit in Bogota and Mexico City: the absence of places where residents can gather, learn, rest and participate in collective life. When such spaces do not exist, the article argues, the city fails not merely to provide a service but to acknowledge the presence of its own population. A growing number of projects in both cities have sought to address that absence directly. Rather than focusing exclusively on hard infrastructure, these initiatives invest in spaces designed to support education, culture, recreation and community, often combining several of those functions within a single building in neighbourhoods where such facilities are otherwise absent. The PILARES Cuicuilco Community Center in Mexico City, designed by TO, UdeB Arquitectos and AGENdA Agencia de Arquitectura, exemplifies the approach by embedding multiple civic programs in a purpose-built structure on the urban periphery. The analysis positions these efforts as a deliberate reorientation of public investment. Instead of treating community space as a residual category that follows once transport and housing are resolved, both cities have embedded civic architecture as a primary tool for reducing spatial inequality. The projects share a conceptual framework that treats high-quality public buildings in underserved areas as acts of recognition, anchoring neighbourhood identity while providing the social infrastructure that enables residents to participate more fully in urban life.",
+      "whyItMatters": "Embedding multi-use civic buildings in peripheral neighbourhoods offers a tested model for addressing the public space deficit in Australian growth-area suburbs, where community facilities often arrive years after residents, if at all. The Latin American approach of treating civic architecture as neighbourhood infrastructure rather than optional amenity holds direct relevance for metropolitan planning frameworks.",
+      "topics": [
+        "Mexico",
+        "Public Realm",
+        "Community Design",
+        "Social Infrastructure",
+        "Placemaking"
+      ]
+    },
+    {
+      "id": "2026-06-28-002",
+      "date": "2026-06-28",
+      "title": "'Kind of miracle solution': How Paris is harnessing the Seine to replace air-con",
+      "source": "The Guardian",
+      "url": "https://www.theguardian.com/environment/2026/jun/26/underground-revolution-seine-cooling-network-paris-buildings-heat",
+      "thumbnail": "https://i.guim.co.uk/img/media/47c7e7b6f46a1cc9fa0db667ef5707dbcf0bb68c/210_0_3143_2515/master/3143.jpg?width=1200&height=630&quality=85&auto=format&fit=crop&precrop=40:21,offset-x50,offset-y0&overlay-align=bottom%2Cleft&overlay-width=100p&overlay-base64=L2ltZy9zdGF0aWMvb3ZlcmxheXMvdGctZGVmYXVsdC5wbmc&enable=upscale&s=1e2c3c9fbf130cf4d01859b721b917e3",
+      "summary": "Paris is preparing to triple the capacity of one of the world's largest district cooling networks, a system that uses water drawn from the Seine to cool public buildings across the city without relying on conventional air conditioning. The existing network spans 120 kilometres of underground pipes, distributing chilled water to museums, offices, hospitals, schools and landmark buildings including the Louvre and the Grand Palais, as well as hotels and commercial office districts. The system works through heat exchange rather than refrigeration. Cold water from the Seine is pumped through one pipe running alongside a separate pipe carrying warm water from connected buildings. A thin metal wall and heat exchanger allow thermal energy to transfer between the two circuits without the fluids mixing. The cooled water then circulates through the buildings, while the Seine water returns to the river slightly warmer than before. Planning for the network began in the 1990s under a subsidiary of the French utility Engie, which conceived the infrastructure as a response to the urban heat island effect and rising energy demand from conventional cooling. In 2022 the operating contract transferred to Fraicheur de Paris, a company whose name translates as the freshness of Paris, which has since begun expanding the system. The planned tripling of capacity reflects a strategic bet that centralised water-source cooling can scale more efficiently than distributed air conditioning as heatwaves intensify across European cities. The approach treats cooling as a shared urban utility rather than an individual building service, fundamentally shifting how cities can manage thermal comfort at the district scale.",
+      "whyItMatters": "District-scale water-source cooling demonstrates a viable alternative to building-by-building air conditioning in dense urban cores, with direct applicability to Australian CBDs where river and harbour frontages remain underutilised as thermal resources. As Australian cities face more frequent extreme heat events, Paris's three-decade operational track record provides an evidence base for similar infrastructure investment.",
+      "topics": [
+        "France",
+        "Green Infrastructure",
+        "District Energy",
+        "Climate Adaptation",
+        "Urban Heat Island"
+      ]
+    },
+    {
+      "id": "2026-06-28-003",
+      "date": "2026-06-28",
+      "title": "Two Lanes, Ten Feet, and the Future of Regent Street",
+      "source": "Strong Towns",
+      "url": "https://www.strongtowns.org/journal/2026-6-26-two-lanes-ten-feet-and-the-future-of-regent-street",
+      "thumbnail": "https://cdn.prod.website-files.com/6800fb077920f4ca34c37030/6a3daa8637ca788e967b09d3_Ice-Cased%20Neighborhood%20Visual%20(8).avif",
+      "summary": "Madison, Wisconsin's Common Council has voted on a redesign of Regent Street, a key corridor linking the city's university area to its downtown, following nearly a year of public engagement and planning review. The debate centred on whether to narrow the street from its current configuration to two travel lanes of ten feet each, a change that Strong Towns contributor Josh Olson argued was all the street needed to function successfully. The redesign process drew input from engineers, business owners and residents, many of whom characterised the area as complicated. Olson's analysis pushed back against that framing, making the case that a narrower cross-section would better serve pedestrians, cyclists and adjacent businesses while maintaining adequate vehicle throughput. The thesis rested on decades of evidence from traffic engineering research showing that narrower lanes calm vehicle speeds and reduce crash severity without significantly degrading traffic flow on urban streets carrying moderate volumes. The Common Council ultimately voted unanimously for the preferred design option, though a follow-up piece by the same author titled Common Council Rejects a Safer Regent suggests the chosen design may not have incorporated the most aggressive lane-narrowing measures that advocates had sought. The Regent Street case illustrates a recurring tension in North American street redesign: even when data supports a narrower, safer cross-section, institutional and political pressures often produce compromise designs that fall short of what the evidence would support. The corridor remains a live example of how street-width decisions shape the character of adjacent neighbourhoods and the viability of street-level commercial activity.",
+      "whyItMatters": "Lane-narrowing debates like Madison's mirror contested streetscape projects across Australian cities, where road-space reallocation for pedestrians and cyclists frequently stalls despite supportive evidence. The unanimous council vote followed by criticism of the outcome demonstrates how even successful political processes can dilute safety-oriented design, a pattern familiar in Australian main-street upgrades.",
+      "topics": [
+        "United States",
+        "Walkable City",
+        "Streetscape Design",
+        "Road Safety",
+        "Active Transport"
+      ]
     }
   ]
 }
