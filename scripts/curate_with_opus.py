@@ -28,8 +28,10 @@ from __future__ import annotations
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
+import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -215,22 +217,61 @@ Return STRICT JSON only, no surrounding prose, no markdown fence:
 # Opus invocation
 # ----------------------------------------------------------------------------
 
+def _run_claude(cmd: list[str], stdin_text: str, timeout: int):
+    """Run a `claude` CLI command with a HARD timeout that actually fires.
+
+    `subprocess.run(timeout=...)` only kills the *direct* child. `claude` is a
+    node app that spawns grandchild helpers which inherit the stdout/stderr
+    pipes; when the timeout fires, run()'s internal reap calls communicate()
+    again with no timeout and blocks FOREVER waiting for those pipes to close.
+    That is exactly what hung the 2026-07-01 morning run for 3.5 hours.
+
+    Fix: put the child in its own session (process-group leader) via
+    start_new_session=True, and on timeout kill the WHOLE group with
+    os.killpg(SIGKILL) so the grandchildren die and we never deadlock.
+
+    Returns (returncode, stdout, stderr). Raises subprocess.TimeoutExpired
+    after the group has been killed, so callers treat it as a failed attempt."""
+    proc = subprocess.Popen(
+        cmd,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    )
+    try:
+        out, err = proc.communicate(input=stdin_text, timeout=timeout)
+        return proc.returncode, out, err
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            pass
+        try:
+            proc.communicate(timeout=10)  # reap; group is dead so this is quick
+        except Exception:
+            pass
+        raise
+
+
 def _claude_preflight() -> bool:
     """5-token sanity probe. Cheap. If it fails, the main call almost
     certainly will too and we don't want to burn rate-window seconds on it."""
     try:
-        proc = subprocess.run(
+        returncode, _out, err = _run_claude(
             ["claude", "-p", "--model", "opus", "--no-session-persistence", "Say ok"],
-            input="",
-            text=True,
-            capture_output=True,
+            "",
             timeout=30,
         )
-        if proc.returncode != 0:
-            log(f"  preflight FAIL exit={proc.returncode} stderr={proc.stderr.strip()[:200]!r}")
+        if returncode != 0:
+            log(f"  preflight FAIL exit={returncode} stderr={(err or '').strip()[:200]!r}")
             return False
         log(f"  preflight ok")
         return True
+    except subprocess.TimeoutExpired:
+        log(f"  preflight TIMEOUT after 30s (process group killed)")
+        return False
     except Exception as e:
         log(f"  preflight EXC {type(e).__name__}: {str(e)[:120]}")
         return False
@@ -258,27 +299,31 @@ def invoke_opus(prompt: str, timeout: int = 600) -> str:
 
     last_err: str = ""
     for attempt in (1, 2):
-        proc = subprocess.run(
-            cmd,
-            input=prompt,
-            text=True,
-            capture_output=True,
-            timeout=timeout,
-        )
+        try:
+            returncode, out, err = _run_claude(cmd, prompt, timeout)
+        except subprocess.TimeoutExpired:
+            # Hard timeout fired and the process group was killed. Treat as a
+            # failed attempt so we retry once then fall back to heuristic —
+            # NEVER hang the morning run (cf. 2026-07-01 3.5h hang).
+            last_err = f"TIMEOUT after {timeout}s (process group killed)"
+            log(f"  attempt {attempt} FAIL: {last_err}")
+            if attempt == 1:
+                log(f"  sleeping 30s then retrying once…")
+                time.sleep(30)
+            continue
         # Always log usage / stderr so the diagnosis is in the log next time.
-        stderr_tail = (proc.stderr or "").strip()
+        stderr_tail = (err or "").strip()
         if stderr_tail:
             log(f"  attempt {attempt} stderr: {stderr_tail[:500]!r}")
-        if proc.returncode == 0:
-            return proc.stdout.strip()
+        if returncode == 0:
+            return out.strip()
         last_err = (
-            f"exit={proc.returncode} stderr={stderr_tail[:300]!r} "
-            f"stdout_head={proc.stdout.strip()[:200]!r}"
+            f"exit={returncode} stderr={stderr_tail[:300]!r} "
+            f"stdout_head={(out or '').strip()[:200]!r}"
         )
         log(f"  attempt {attempt} FAIL: {last_err}")
         if attempt == 1:
             log(f"  sleeping 30s then retrying once…")
-            import time
             time.sleep(30)
     raise RuntimeError(f"claude -p failed after 2 attempts: {last_err}")
 
