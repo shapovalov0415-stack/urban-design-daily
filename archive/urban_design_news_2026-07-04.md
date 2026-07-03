@@ -1,0 +1,37 @@
+# Urban Design News — 2026-07-04
+
+## On Living Buildings, toxic materials and a nice office-resi conversion from Dexus in Brisbane
+
+**Source:** The Fifth Estate  
+**URL:** https://thefifthestate.com.au/columns/news-from-the-front-desk/on-living-buildings-toxic-materials-and-a-nice-office-resi-conversion-from-dexus-in-brisbane/  
+**Topics:** Australia, Brisbane, Adaptive Reuse, Urban Renewal, Sustainability
+
+Brisbane is emerging as a testing ground for sustainability-driven urban transformation ahead of the 2032 Olympics. Developer Dexus has advanced an office-to-residential conversion in the Brisbane CBD, a typology gaining momentum as central business districts across Australia contend with elevated commercial vacancy rates alongside acute housing demand. The conversion model addresses two urban challenges simultaneously, reactivating underperforming commercial floorplates while delivering inner-city housing without consuming greenfield land. The broader discussion extends to living building principles, which push developments beyond net-zero energy performance toward regenerative contributions to local ecosystems, and to growing scrutiny of toxic materials embedded in the construction supply chain. Both agendas signal a maturation of the sustainability discourse beyond operational energy toward whole-of-lifecycle building performance. A notable dynamic surrounds the 2032 Olympic and Paralympic Games. While the Queensland state government has reportedly done what it can to prevent sustainability from becoming a central driver of Games delivery, companies likely to be involved in Olympic-related development have formed their own coalition to embed sustainability principles into project planning and construction. The industry calculus is straightforward: the reputational risk of ignoring environmental and social performance now outweighs the cost of voluntary compliance, particularly for firms seeking to remain competitive beyond the Games cycle. The convergence of adaptive reuse strategy, materials transparency, and industry-led sustainability action in Brisbane represents a distinctive model of urban renewal where market expectations and greenwash risk function as more potent drivers of sustainable development than regulatory mandates alone.
+
+**Why it matters:** Brisbane's experience demonstrates that industry-driven sustainability coalitions can advance urban renewal objectives even when state government leadership is absent. The adaptive reuse of CBD commercial stock into housing offers a replicable model for Australian cities facing similar vacancy and housing supply pressures.
+
+---
+
+## A Beating and Bleeding Heart: Bodies, Streets, and the Politics of Care in Bogotá
+
+**Source:** ArchDaily  
+**URL:** https://www.archdaily.com/1042370/a-beating-and-bleeding-heart-bodies-streets-and-the-politics-of-care-in-bogota  
+**Topics:** Colombia, Public Space, Streetscape, Informal Urbanism, Urban Theory
+
+La Carrera Septima, Bogota's Seventh Avenue, functions as the Colombian capital's most significant urban artery, traversed by more than two million people daily. The street operates simultaneously as marketplace, protest route, and transportation hub, with cyclists, pedestrians, ambulatory vendors, recyclers, and tourists sharing the carriageway in a continuous choreography of competing uses. Vendors demarcate territories with tarps displaying goods ranging from avocados and phone cases to hand-beaded jewelry, while police interactions, commercial exchanges, and spontaneous social encounters unfold alongside one another. Research conducted over nearly a year of sustained observation frames La Septima through the lens of urban embodiment. The street has historically been imagined as Bogota's backbone, its vital artery, its heart. It bleeds, bears scars, and demands care. This corporeal metaphor is not merely literary: it reflects how the physical infrastructure of the street absorbs the social, economic, and political life of the city and carries visible traces of each era's interventions and neglect. The analysis connects street-level informality to broader questions about who has the right to occupy and shape public space. Vendors, recyclers, and commuters collectively produce an urban commons that formal planning frameworks often struggle to accommodate. The tension between planned order and organic street life on La Septima encapsulates a core challenge for cities worldwide: how to design and manage public space in ways that honour existing patterns of use while addressing safety, mobility, and equity. Bogota's experience offers a rare longitudinal perspective on the politics of care embedded in everyday streetscape management.
+
+**Why it matters:** Street-level ethnography of La Septima reveals how informal uses generate public life that formal planning often fails to replicate, a tension Australian cities encounter when balancing activation strategies with regulatory control in shared streets and laneways.
+
+---
+
+## How These Two Cities Are Inspiring Dar es Salaam's Public Transport Future
+
+**Source:** ITDP  
+**URL:** https://itdp.org/2026/07/02/jakarta-dakar-inspiring-dar-es-salaam-brt/  
+**Topics:** Tanzania, Bus Rapid Transit, Transit Governance, Public Transport
+
+Dar es Salaam is entering a critical phase in its bus rapid transit expansion, shifting focus from infrastructure construction to the institutional governance, business models, and management structures required for long-term operational success. With the first two BRT phases already carrying passengers and new corridors under development, the city has demonstrated its capacity to deliver world-class transit infrastructure. The challenge now lies in sustaining service quality through robust governance frameworks. To support this transition, the Institute for Transportation and Development Policy organised a study tour for Tanzanian officials representing agencies including the Dar es Salaam Rapid Transit authority, the Ministry of Finance, the PPP Center, and public transport operators. The delegation visited Jakarta, Indonesia, and Dakar, Senegal, both cities offering transferable lessons for East African transit development. Jakarta demonstrated how a single BRT corridor can evolve over two decades into a citywide integrated mobility network. TransJakarta operates under a governance structure where the provincial government provides policy direction and funding while the agency manages infrastructure, fare integration, and service planning. Private operators deliver services through performance-based contracts with clearly defined responsibilities. Dakar illustrated the value of a dedicated transport authority. CETUD coordinates government agencies, manages concession agreements, and oversees network restructuring, providing the institutional foundation that allowed the city to deliver one of the continent's first electric BRT systems. Both cases underscore a principle increasingly recognised in transit planning globally: building high-quality infrastructure is a necessary but insufficient condition for sustained ridership growth without corresponding investment in institutional capacity and contract management.
+
+**Why it matters:** Jakarta and Dakar's governance models demonstrate that institutional design determines whether transit infrastructure translates into sustained ridership, a lesson applicable to Australian cities expanding light rail and BRT networks where operational frameworks often lag behind capital investment.
+
+---
