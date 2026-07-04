@@ -2802,6 +2802,57 @@
         "Transit Governance",
         "Public Transport"
       ]
+    },
+    {
+      "id": "2026-07-05-001",
+      "date": "2026-07-05",
+      "title": "Regional projects and regenerative design redefine excellence at NSW Architecture Awards",
+      "source": "The Fifth Estate",
+      "url": "https://thefifthestate.com.au/events/tfeevents/event-news/awards-event-news/regional-projects-and-regenerative-design-redefine-excellence-at-nsw-architecture-awards/",
+      "thumbnail": "https://thefifthestate.com.au/wp-content/uploads/2026/07/07_10830-public_NewSydneyFishMarket_3XNBVNASPECT_RasmusHjortshoj-1.jpg",
+      "summary": "The 2026 New South Wales Architecture Awards highlighted a significant shift toward regional projects and regenerative design as the defining themes of this year's most outstanding architectural work. Jury Chair Bill Tsakalos identified the volume of regional projects achieving recognition at the highest level as a striking takeaway from the program, noting that these projects succeeded through sustainable methods that respond directly to their geographic and climatic contexts. Tsakalos described the awarded cohort as confirming that Australian architecture remains among the most innovative and thoughtful in the world, characterised by a distinctly Australian sensibility. The projects demonstrate strong responses to climate, landscape, culture, and materials, presenting compelling ideas that connect design excellence with environmental and social performance across multiple building typologies. The awards, announced by the Australian Institute of Architects at City Recital Hall in Sydney, set industry benchmarks for design excellence, sustainability, and social impact. The emphasis on regional work signals a maturing of architectural practice beyond the capital cities, where practitioners are producing buildings that engage deeply with local conditions rather than importing metropolitan design languages into non-urban settings. The regenerative design focus reflects a broader industry movement beyond simply minimising environmental harm toward actively restoring ecological and social systems through the design and construction of built form. For practitioners working in regional centres across New South Wales, this recognition validates approaches that prioritise climate-responsive design, locally sourced materials, and community-embedded construction processes over signature aesthetic gestures more commonly associated with major awards programs.",
+      "whyItMatters": "Regional projects dominating a state-level awards program signals that design excellence no longer requires proximity to Sydney or Melbourne, reinforcing the case for place-based architectural talent outside capital cities. For state planning frameworks encouraging decentralisation, this validates that quality outcomes follow when regional practitioners engage directly with landscape, climate, and local culture.",
+      "topics": [
+        "Australia",
+        "New South Wales",
+        "Regenerative Design",
+        "Landscape Urbanism",
+        "Regional Planning"
+      ]
+    },
+    {
+      "id": "2026-07-05-002",
+      "date": "2026-07-05",
+      "title": "The 2026 World Cup is a Chance to Spotlight Safer Streets and Better Transport",
+      "source": "ITDP",
+      "url": "https://itdp.org/2026/06/16/2026-world-cup-spotlight-safer-streets-and-better-transport/",
+      "thumbnail": "https://itdp.org/wp-content/uploads/2026/06/mexico-football-campaign-2.jpg",
+      "summary": "The Institute for Transportation and Development Policy has framed the 2026 FIFA World Cup, jointly hosted across Mexico, the United States, and Canada, as a pivotal opportunity to advance safer streets and sustainable transport infrastructure in North American host cities. With millions of residents and visitors converging on tournament venues throughout the summer, the challenge of moving people safely, efficiently, and sustainably has become a central planning question for municipal and national authorities across all three host nations. The tournament's geographic spread across multiple metropolitan areas creates both significant logistical complexity and an unprecedented platform for demonstrating viable alternatives to car-dependent event transport models. Host cities face pressure to deliver reliable mobility networks that serve diverse populations, including those without access to private vehicles, while managing surge demand around match days and fan gathering zones in urban centres. ITDP positions the event as a catalyst for permanent infrastructure improvements rather than temporary operational fixes. Investments in bus rapid transit corridors, protected cycling networks, pedestrianised fan zones, and improved wayfinding systems made for tournament purposes can establish lasting frameworks for everyday urban mobility if designed with long-term community utility as a primary consideration. The multi-city format also enables direct comparison between different transport governance models and street design approaches across varied North American urban contexts, offering real-world evidence on what works at scale when political will, funding, and international attention converge on sustainable urban mobility challenges simultaneously.",
+      "whyItMatters": "Mega-events consistently demonstrate that deadline pressure and international visibility can compress decades of transport reform into months of implementation. Australian cities preparing for the 2032 Brisbane Olympics can draw directly on lessons from how World Cup host cities leverage tournament investment to deliver permanent walking, cycling, and transit infrastructure beyond the event itself.",
+      "topics": [
+        "United States",
+        "Walkable Cities",
+        "Sustainable Transport",
+        "Public Realm",
+        "Street Design"
+      ]
+    },
+    {
+      "id": "2026-07-05-003",
+      "date": "2026-07-05",
+      "title": "Climate change will raise the risk of severe heatwaves. NZ homes aren't ready",
+      "source": "The Conversation AU",
+      "url": "https://theconversation.com/climate-change-will-raise-the-risk-of-severe-heatwaves-nz-homes-arent-ready-286563",
+      "thumbnail": "https://images.theconversation.com/files/745328/original/file-20260701-57-vtxs7o.jpg?ixlib=rb-4.1.0&rect=0%2C425%2C5100%2C2550&q=45&auto=format&w=1356&h=668&fit=crop",
+      "summary": "New research modelling the impacts of rising temperatures on New Zealand households reveals that cooling demand during summer months, rather than traditional winter heating load, may place significantly greater pressure on the country's electricity system by the latter decades of this century. The study simulated household electricity use under mid-range and high-end warming scenarios for Auckland and Christchurch, incorporating factors including household income, ambient temperature, housing quality, and decisions about air conditioning adoption. Peak summer temperatures in New Zealand's largest urban centres could climb several degrees above current levels by the end of the century, fundamentally changing thermal performance expectations for residential buildings. New Zealand homes have traditionally been designed primarily to retain warmth during winter, with relatively little consideration for managing summer overheating events, creating a growing mismatch between existing housing stock and shifting climatic conditions. A recent survey found nearly three-quarters of households with heat pumps already use them for cooling, indicating behavioural adaptation is well underway. However, the research identifies significant equity gaps in this transition: renters, families with children, and Maori households are all less likely to have access to or use space cooling, largely due to cost barriers. This pattern reflects wider energy poverty dynamics where low-income and marginalised households already limit or forgo heating expenditure, with measurable consequences for health outcomes and associated healthcare costs. The findings highlight how climate adaptation intersects with housing design standards, energy infrastructure planning, and social equity, suggesting that building codes focused primarily on winter thermal performance will increasingly fail occupants as warming accelerates through mid-century and beyond.",
+      "whyItMatters": "New Zealand's experience of retrofitting a housing stock designed for winter warmth against summer overheating directly parallels challenges facing southern Australian cities. Melbourne's building standards similarly emphasise heating over cooling, and this research quantifies the equity and infrastructure costs of delayed adaptation in comparable mild-maritime climates.",
+      "topics": [
+        "New Zealand",
+        "Climate Adaptation",
+        "Housing Design",
+        "Urban Resilience",
+        "Energy Equity"
+      ]
     }
   ]
 }
